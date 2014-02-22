@@ -5,17 +5,13 @@ public class Networker : MonoBehaviour {
 	
 	
 	public GameObject playerPrefab;
-	public Transform spawn;
-	
-	
+	public Transform spawnPoint;
+    public int maxPlayers = 2;
+    public int port = 80;
+    private const string gameType = "maze_test";
 	private bool no_pick = true;
-	private string gameType = "agomezl_test";
 	private bool refresh = false;
 	private HostData[] hosts;
-	// Use this for initialization
-	void Start () {
-		
-	}
 	
 	// Update is called once per frame
 	void Update () 
@@ -25,14 +21,11 @@ public class Networker : MonoBehaviour {
 			Debug.Log(MasterServer.PollHostList().Length);
 			hosts = MasterServer.PollHostList();
 		}
-		
 	}
-	
-	
-	//Server
-	void startServer()
+
+    void StartServer()
 	{
-		Network.InitializeServer(2,25001,!Network.HavePublicAddress());
+		Network.InitializeServer(maxPlayers, port,!Network.HavePublicAddress());
 		MasterServer.RegisterHost(gameType,"test01", "");
 	}
 	
@@ -48,21 +41,20 @@ public class Networker : MonoBehaviour {
 	void OnServerInitialized()
 	{
 		Debug.Log("Servidor iniciado");
-		spawnPlayer();
+		SpawnPlayer();
 	}
 	
 	void OnConnectedToServer()
 	{
-		spawnPlayer();
+		SpawnPlayer();
 	}
 	
-	void spawnPlayer()
+	void SpawnPlayer()
 	{
-		Network.Instantiate(playerPrefab,spawn.position,Quaternion.identity, 0);
+		Network.Instantiate(playerPrefab,spawnPoint.position,Quaternion.identity, 0);
 	}
 	
-	
-	void refreshHostList()
+	void RefreshHostList()
 	{
 		MasterServer.RequestHostList(gameType);
 		refresh = true;
@@ -77,13 +69,13 @@ public class Networker : MonoBehaviour {
 			if(GUI.Button(new Rect(20,40,80,20), "Server")) 
 			{
 				Debug.Log("Soy un servidor");
-				startServer();
+				StartServer();
 				
 			}
 			if(GUI.Button(new Rect(20,70,80,20), "Client")) 
 			{
 				Debug.Log ("Soy un cliente");
-				refreshHostList();
+				RefreshHostList();
 			}
 			
 			if (hosts != null)
@@ -104,6 +96,5 @@ public class Networker : MonoBehaviour {
 			}
 		}
 	}
-	
 	
 }
