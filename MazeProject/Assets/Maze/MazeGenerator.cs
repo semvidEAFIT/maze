@@ -32,6 +32,7 @@ public class MazeGenerator : MonoBehaviour {
 				maze[i, j] = "n";
 			}
 		}
+		CreateBarriers();
 		maze[0, 0] = "p";
 		System.Random r = new System.Random();
 		Generate(Vector2.zero,new Vector2(0, -1));
@@ -51,7 +52,7 @@ public class MazeGenerator : MonoBehaviour {
 					GameObject go = (GameObject)Instantiate(
 						wall,
                         new Vector3(i * wall.renderer.bounds.size.x, 
-					            0 + (wall.renderer.bounds.size.y / 2), 
+					            wall.renderer.bounds.size.y / 2, 
 					            j * wall.renderer.bounds.size.z), 
                         		floor.transform.rotation
                         )
@@ -129,4 +130,19 @@ public class MazeGenerator : MonoBehaviour {
 		}
 	}
 	
+	void CreateBarriers ()
+	{
+		for(int i = 0; i < x; i++){
+			GameObject b1 = (GameObject)Instantiate(wall, new Vector3(i * wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, -wall.renderer.bounds.size.z), wall.transform.rotation);
+			b1.transform.parent = this.transform;
+			GameObject b2 = (GameObject)Instantiate(wall, new Vector3(i * wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, y * wall.renderer.bounds.size.z), wall.transform.rotation);
+			b2.transform.parent = this.transform;
+		}
+		for(int i = 0; i < y; i++){
+			GameObject b1 = (GameObject)Instantiate(wall, new Vector3(-wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, i * wall.renderer.bounds.size.z), wall.transform.rotation);
+			b1.transform.parent = this.transform;
+			GameObject b2 = (GameObject)Instantiate(wall, new Vector3(x * wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, i * wall.renderer.bounds.size.z), wall.transform.rotation);
+			b2.transform.parent = this.transform;
+		}
+	}
 }
