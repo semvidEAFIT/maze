@@ -26,23 +26,40 @@ public class MazeGenerator : MonoBehaviour {
 	private string[,] maze;
 
 	void Start () {
-		maze = new string[x,y];
-		for(int i = 0; i < x;i++){
+		maze = new string[x, y];
+		for(int i = 0; i < x; i++){
 			for (int j = 0; j < y; j++){
-				maze[i,j] = "n";
+				maze[i, j] = "n";
 			}
 		}
-		maze[0,0] = "p";
+		CreateBarriers();
+		maze[0, 0] = "p";
 		System.Random r = new System.Random();
-		Generate(Vector2.zero,new Vector2(0,-1));
-		for(int i = 0; i < x;i++){
+		Generate(Vector2.zero,new Vector2(0, -1));
+		for(int i = 0; i < x; i++){
 			for (int j = 0; j < y; j++){
-				if(maze[i,j] == "p"){
-					GameObject.Instantiate(floor,new Vector3(i*2,0,j*2),floor.transform.rotation);
-				}else if(maze[i,j] == "w"){
-					GameObject go = (GameObject)Instantiate(wall,new Vector3(i*2,0,j*2),floor.transform.rotation);
+				if(maze[i, j] == "p"){
+					GameObject fgo = (GameObject)GameObject.Instantiate(
+						floor,
+						new Vector3(i * floor.renderer.bounds.size.x,
+					            0, 
+					            j * floor.renderer.bounds.size.z),
+								floor.transform.rotation
+						)
+					;
+					fgo.transform.parent = this.transform;
+				}else if(maze[i, j] == "w"){
+					GameObject go = (GameObject)Instantiate(
+						wall,
+                        new Vector3(i * wall.renderer.bounds.size.x, 
+					            wall.renderer.bounds.size.y / 2, 
+					            j * wall.renderer.bounds.size.z), 
+                        		floor.transform.rotation
+                        )
+					;
 					int index = r.Next(wallMaterials.Length);
 					go.renderer.material = wallMaterials[index];
+					go.transform.parent = this.transform;
 				}
 			}
 		}
@@ -60,21 +77,21 @@ public class MazeGenerator : MonoBehaviour {
 		List <Vector2> positions = new List<Vector2>();
 		int max = 0;
 		count = 0;
-		if(i>0 && (maze[i-1,j] == "n"||maze[i-1,j] == "w")){
+		if(i>0 && (maze[i - 1, j] == "n" || maze[i - 1, j] == "w")){
 			count++;
 			positions.Add(new Vector2(i-1,j));
 		}
-		if(i<x-1 && (maze[i+1,j] == "n"||maze[i+1,j] == "w")){
+		if(i < x - 1 && (maze[i + 1, j] == "n" || maze[i + 1, j] == "w")){
 			count++;
-			positions.Add(new Vector2(i+1,j));
+			positions.Add(new Vector2(i+1, j));
 		}
-		if(j>0 && (maze[i,j-1] == "n"||maze[i,j-1] == "w")){
+		if(j > 0 && (maze[i, j - 1] == "n" || maze[i , j - 1] == "w")){
 			count++;
-			positions.Add(new Vector2(i,j-1));
+			positions.Add(new Vector2(i, j-1));
 		}
-		if(j<y-1 && (maze[i,j+1] == "n"||maze[i,j+1] == "w")){
+		if(j < y - 1 && (maze[i, j + 1] == "n" || maze[i, j+1] == "w")){
 			count++;
-			positions.Add(new Vector2(i,j+1));
+			positions.Add(new Vector2(i, j+1));
 		}
 		return positions;
 	}
@@ -86,31 +103,46 @@ public class MazeGenerator : MonoBehaviour {
 	/// <param name="prev">Previous node.</param>
 	public void Generate(Vector2 p, Vector2 prev){
 		int count = 0;
-		List<Vector2> nexts = CheckNeighbors((int)p.x,(int)p.y,out count);
-		bool a = (p.x==0 && p.y==0)||(p.x==x-1 && p.y==y-1);
-		bool b =(p.x==0 || p.y==0 || p.x==x-1 || p.y==y-1);
+		List<Vector2> nexts = CheckNeighbors((int)p.x,(int)p.y, out count);
+		bool a = (p.x == 0 && p.y == 0)||(p.x == x-1 && p.y == y-1);
+		bool b =(p.x == 0 || p.y == 0 || p.x == x-1 || p.y == y-1);
 		int pr = 0;
-		if(nexts.Count==1){
+		if(nexts.Count == 1){
 			System.Random random = new System.Random();
 			pr = random.Next(2);
 		}
-		if((nexts.Count <3 && (!b)) || nexts.Count==1 /*|| nexts.Count==0 */|| pr == 1){
+		if((nexts.Count < 3 && (!b)) || nexts.Count == 1 /*|| nexts.Count==0 */|| pr == 1){
 			maze[(int)p.x,(int)p.y] = "w";
 		}else{
 			maze[(int)p.x,(int)p.y] = "p";
 			int times = 0;
 			while(nexts.Count != 0 /*&& times <4*/){
 				int index = Random.Range(0,nexts.Count);
-				if(index>nexts.Count-1){
-					index= index%nexts.Count;
+				if(index>nexts.Count - 1){
+					index = index % nexts.Count;
 				}
-				Vector2 next=nexts[index];
-				if(maze[(int)next.x,(int)next.y]=="n"){
-					Generate(next,p);
+				Vector2 next = nexts[index];
+				if(maze[(int)next.x,(int)next.y] == "n"){
+					Generate(next, p);
 				}
 				nexts.Remove(next);
 			}
 		}
 	}
 	
+	void CreateBarriers ()
+	{
+		for(int i = 0; i < x; i++){
+			GameObject b1 = (GameObject)Instantiate(wall, new Vector3(i * wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, -wall.renderer.bounds.size.z), wall.transform.rotation);
+			b1.transform.parent = this.transform;
+			GameObject b2 = (GameObject)Instantiate(wall, new Vector3(i * wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, y * wall.renderer.bounds.size.z), wall.transform.rotation);
+			b2.transform.parent = this.transform;
+		}
+		for(int i = 0; i < y; i++){
+			GameObject b1 = (GameObject)Instantiate(wall, new Vector3(-wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, i * wall.renderer.bounds.size.z), wall.transform.rotation);
+			b1.transform.parent = this.transform;
+			GameObject b2 = (GameObject)Instantiate(wall, new Vector3(x * wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, i * wall.renderer.bounds.size.z), wall.transform.rotation);
+			b2.transform.parent = this.transform;
+		}
+	}
 }

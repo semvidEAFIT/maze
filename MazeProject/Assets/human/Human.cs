@@ -15,11 +15,7 @@ public class Human : MonoBehaviour {
 	/// </summary>
 	public float sprintTime = 7;
 
-	private bool isSprinting;
-	public bool IsSprinting {
-		get { return isSprinting; }
-		set { isSprinting = value; }
-	}
+	private float sprintTimeLeft;
 
 	private float defaultSpeed;
 
@@ -35,7 +31,8 @@ public class Human : MonoBehaviour {
 		if(stepSound == null){
 			Debug.LogError("StepSoundPlayer: step sound not asigned to object " + gameObject.name);
 		}
-		isSprinting = false;
+		sprintTime/=10;
+		sprintTimeLeft = sprintTime;
 		motor = GetComponent<CharacterMotor>();
 		defaultSpeed = motor.movement.maxForwardSpeed;
 
@@ -46,10 +43,13 @@ public class Human : MonoBehaviour {
 			PlaySound(stepSound);
 		}
 
-		if(Input.GetAxis("sprint")!=0){
+
+		if(Input.GetAxis("sprint")!=0 && sprintTimeLeft>0){
 			motor.movement.maxForwardSpeed =  sprintSpeed;
+			sprintTimeLeft-=Time.deltaTime;
 		} else {
 			motor.movement.maxForwardSpeed = defaultSpeed;
+			sprintTimeLeft+=Time.deltaTime;
 		}
 	}
 
