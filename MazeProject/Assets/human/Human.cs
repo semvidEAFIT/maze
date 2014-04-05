@@ -53,9 +53,9 @@ public class Human : MonoBehaviour {
 	}
 
 	void Update () {
-//		if((Input.GetAxis("Horizontal")!=0 || Input.GetAxis("Vertical")!=0) && !audio.isPlaying){
-//			PlayStep();
-//		}
+		if((Input.GetAxis("Horizontal")!=0 || Input.GetAxis("Vertical")!=0) && !audio.isPlaying){
+			Play();
+		}
 
 
 		if(canRun){
@@ -118,5 +118,10 @@ public class Human : MonoBehaviour {
 
 	public void PlayStep(){
 		audio.PlayOneShot(stepSound);
+	}
+
+	public void Play(){
+		audio.clip = stepSound;
+		audio.Play();
 	}
 }
