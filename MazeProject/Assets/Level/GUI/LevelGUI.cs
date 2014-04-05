@@ -4,7 +4,7 @@ using System;
 
 /// <summary>
 /// Handles the Level GUI, uses states to know how to draw in a given moment,
-/// to change the current state use the Current property.
+/// to change the current state use the State property.
 /// </summary>
 public class LevelGUI : MonoBehaviour
 {
@@ -14,12 +14,14 @@ public class LevelGUI : MonoBehaviour
 
     #region Variables
     private GameState currentState = GameState.Playing;
+
     /// <summary>
     /// Contains the methods to be called when the given GameState value is
     /// set as the current value.
     /// </summary>
     private Action[] setup;
-    public GameState Current
+
+    public GameState State
     {
         get { return currentState; }
         set { 
@@ -76,14 +78,6 @@ public class LevelGUI : MonoBehaviour
             default:
                 break;
         }
-    }
-
-    /// <summary>
-    /// Used for testing
-    /// TODO: Delete this
-    /// </summary>
-    public void Update() {
-        if (Input.GetKeyDown(KeyCode.Space)) Current = GameState.Ended;
     }
 
     #region EndOfGame
