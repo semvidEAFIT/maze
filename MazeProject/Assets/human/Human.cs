@@ -8,7 +8,7 @@ public class Human : MonoBehaviour {
 	/// <summary>
 	/// The step sound to be played. Must be loopeable.
 	/// </summary>
-	public AudioClip stepSound;
+	public AudioClip[] stepSounds;
 
 	/// <summary>
 	/// The time the human can run in seconds.
@@ -42,7 +42,7 @@ public class Human : MonoBehaviour {
 	private CharacterMotor motor;
 
 	void Start () {
-		if(stepSound == null){
+		if(stepSounds == null || stepSounds.Length==0){
 			Debug.LogError("StepSoundPlayer: step sound not asigned to object " + gameObject.name);
 		}
 		sprintTimeLeft = sprintTime;
@@ -113,15 +113,16 @@ public class Human : MonoBehaviour {
 //			timeRested += Time.deltaTime;
 //		}
 //
-		Debug.Log(sprintTimeLeft);
+
+		//Debug.Log(sprintTimeLeft);
 	}
 
 	public void PlayStep(){
-		audio.PlayOneShot(stepSound);
+		audio.PlayOneShot(stepSounds[(int) (Random.value * stepSounds.Length-1)]);
 	}
 
 	public void Play(){
-		audio.clip = stepSound;
+		audio.clip = stepSounds[(int) (Random.value * stepSounds.Length-1)];
 		audio.Play();
 	}
 }
