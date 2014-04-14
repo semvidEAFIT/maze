@@ -11,7 +11,18 @@ public class GameMaster : MonoBehaviour {
 	#region Variables
 	private static GameMaster instance;
 	private LevelGUI levelGUI;
+	public int numbrerOfPlayers = 5;//solo esta publico para probar temporalmente.
 	#endregion
+
+	public int NumbrerOfPlayers {
+		get {
+			return numbrerOfPlayers;
+		}
+		set {
+			numbrerOfPlayers = value;
+		}
+	}
+
 
 	public static GameMaster Instance {
 		get{
@@ -35,7 +46,7 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Human player reached one exit exit.
+	/// Human player reached one exit.
 	/// </summary>
 	/// <param name="human">Game object.</param>
 	public void PlayerReachedExit (GameObject human, GameObject exit)
