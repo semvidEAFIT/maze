@@ -20,7 +20,7 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	void Start(){
-		levelGUI.State = GameState.Playing;
+		levelGUI.State = EState.Playing;
 	}
 
 	// Use this for initialization
@@ -41,6 +41,6 @@ public class GameMaster : MonoBehaviour {
 	public void PlayerReachedExit (GameObject human, GameObject exit)
 	{
 		//TODO: End of game logic.
-		levelGUI.State = GameState.Ended;
+		levelGUI.State = EState.Ended;
 	}
 }

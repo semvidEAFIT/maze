@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(CharacterMotor))]
+[RequireComponent(typeof(FPSInputController))]
 [RequireComponent(typeof(AudioSource))]
-public class Human : MonoBehaviour {
+[RequireComponent(typeof(CharacterController))]
+public class Movement : MonoBehaviour {
 
 	/// <summary>
 	/// The step sound to be played. Must be loopeable.
 	/// </summary>
-	public AudioClip stepSound;
+	public AudioClip[] stepSounds;
 
 	/// <summary>
 	/// The time the human can run in seconds.
@@ -41,8 +42,10 @@ public class Human : MonoBehaviour {
 	//the one in charge of the character movement
 	private CharacterMotor motor;
 
+    //TODO: Delete this variables that 
+
 	void Start () {
-		if(stepSound == null){
+		if(stepSounds == null || stepSounds.Length==0){
 			Debug.LogError("StepSoundPlayer: step sound not asigned to object " + gameObject.name);
 		}
 		sprintTimeLeft = sprintTime;
@@ -66,13 +69,13 @@ public class Human : MonoBehaviour {
         //TODO: Delete this line, this line is necessary because we don't have the animation yet.
         if ((Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0) && !audio.isPlaying)
         {
-            PlayStep();
+            Play();
         }
 
         //The user still has time to run.
         if (canRun)
         {
-            if (Input.GetAxis("sprint") > 0)
+            if (Input.GetAxis("Sprint") > 0)
             {
                 motor.movement.maxForwardSpeed = sprintSpeed;
 
@@ -115,6 +118,14 @@ public class Human : MonoBehaviour {
     /// Plays the step sound, intended to be used with the Animation.
     /// </summary>
 	public void PlayStep(){
-		audio.PlayOneShot(stepSound);
+		audio.PlayOneShot(stepSounds[(int) (Random.value * stepSounds.Length-1)]);
 	}
+
+    private void Play() {
+        if (!audio.isPlaying)
+        {
+            audio.clip = stepSounds[Random.Range(0, stepSounds.Length)];
+            audio.Play();
+        }
+    }
 }

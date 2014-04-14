@@ -13,15 +13,15 @@ public class LevelGUI : MonoBehaviour
     #endregion
 
     #region Variables
-    private GameState currentState = GameState.Playing;
+    private EState currentState = EState.Playing;
 
     /// <summary>
-    /// Contains the methods to be called when the given GameState value is
+    /// Contains the methods to be called when the given EState value is
     /// set as the current value.
     /// </summary>
     private Action[] setup;
 
-    public GameState State
+    public EState State
     {
         get { return currentState; }
         set { 
@@ -70,9 +70,9 @@ public class LevelGUI : MonoBehaviour
         if (skin != null) GUI.skin = skin;
         switch (currentState)
         {
-            case GameState.Playing:
+            case EState.Playing:
                 break;
-            case GameState.Ended:
+            case EState.Ended:
                 DrawEndOfGame();
                 break;
             default:
