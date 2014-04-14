@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class MazeGenerator : MonoBehaviour {
+
+	public GameObject human;
 	/// <summary>
 	/// The floor.
 	/// </summary>
@@ -18,7 +20,7 @@ public class MazeGenerator : MonoBehaviour {
 	/// <summary>
 	/// The exit prefab (of the maze).
 	/// </summary>
-	public GameObject exit;
+	public GameObject exitGameObject;
 	/// <summary>
 	/// The sound trigger chance of appearing (in %).
 	/// </summary>
@@ -36,6 +38,9 @@ public class MazeGenerator : MonoBehaviour {
 	/// </summary>
 	public int height;
 	/// <summary>
+	/// x & y where the algorithm starts running.
+	/// </summary>
+	public int startingX, startingY;
 	/// The chance of deleting SoundTriggers after the initial pass.
 	/// </summary>
 	public int chanceOfDel = 95;
@@ -48,6 +53,8 @@ public class MazeGenerator : MonoBehaviour {
 	private bool[,] mazeSoundTriggerVisited;
 
 	void Start () {
+		startingX--; //para no tener que poner la mitad menos uno en el editor
+		startingY--;
 		maze = new string[width, height];
 		mazeIsSoundTrigger = new bool[width, height];
 		mazeSoundTriggerVisited = new bool[width,height];
@@ -57,11 +64,13 @@ public class MazeGenerator : MonoBehaviour {
 				mazeIsSoundTrigger[i, j] = false;
 			}
 		}
-		maze[0, 0] = "p"; //TODO: Try starting in the center.
+		maze[startingX, startingY] = "p";
 		System.Random r = new System.Random();
-		Generate(Vector2.zero,new Vector2(0, -1));
 
-		PlaceExits(new Vector2(0,0), new Vector2(width,height));
+		Generate(Vector2.zero, new Vector2(startingX, startingY - 1));
+		ClearSurroundings(startingX, startingY, 1);
+
+		int[] exitsPos = PlaceExits(new Vector2(0, 0), new Vector2(width, height));
 
 		for(int i = 0; i < width; i++){
 			for (int j = 0; j < height; j++){
@@ -72,21 +81,33 @@ public class MazeGenerator : MonoBehaviour {
 					go.renderer.material = wallMaterials[index];
 				} else if(maze[i,j] == "p"){ 
 					if(r.Next(100) <= soundTriggerChance){//place soundTrigger
-						mazeIsSoundTrigger[i,j] = true;
+						mazeIsSoundTrigger[i, j] = true;
 					} else {
-						mazeIsSoundTrigger[i,j] = false;
+						mazeIsSoundTrigger[i, j] = false;
 					}
 
-				} else if(maze[i,j] == "s"){
-					GameObject go = InstantiateObject(exit, i, j);
-					go.transform.parent = this.transform;
-				} //TODO: reconocer "s" y poner la salida
+				} 
 			}
 		}
-
+		InstantiateObject(human, startingX, startingY);
 		PlaceSoundTriggers();
-		CreateBarriers();
+		CreateBarriers(exitsPos);
 		PlaceFloor();
+	}
+
+	/// <summary>
+	/// Clears the surroundings of the specific tile at (x, y).
+	/// </summary>
+	/// <param name="startingX">x coordinate.</param>
+	/// <param name="startingY">y coordinate.</param>
+	/// <param name="range">The range around to clear.</param>
+	void ClearSurroundings (int x, int y, int range)
+	{
+		for(int i = x - range; i <= x + range; i++){
+			for(int j = y - range; j <= y + range; j++){
+				maze[i, j] = "p";
+			}
+		}
 	}
 
 	/// <summary>
@@ -100,21 +121,21 @@ public class MazeGenerator : MonoBehaviour {
 		List <Vector2> positions = new List<Vector2>();
 		int max = 0;
 		count = 0;
-		if(i>0 && (maze[i - 1, j] == "n" || maze[i - 1, j] == "w")){
+		if(i > 0 && (maze[i - 1, j] == "n" || maze[i - 1, j] == "w")){
 			count++;
-			positions.Add(new Vector2(i-1,j));
+			positions.Add(new Vector2(i - 1,j));
 		}
 		if(i < width - 1 && (maze[i + 1, j] == "n" || maze[i + 1, j] == "w")){
 			count++;
-			positions.Add(new Vector2(i+1, j));
+			positions.Add(new Vector2(i + 1, j));
 		}
 		if(j > 0 && (maze[i, j - 1] == "n" || maze[i , j - 1] == "w")){
 			count++;
-			positions.Add(new Vector2(i, j-1));
+			positions.Add(new Vector2(i, j - 1));
 		}
 		if(j < height - 1 && (maze[i, j + 1] == "n" || maze[i, j+1] == "w")){
 			count++;
-			positions.Add(new Vector2(i, j+1));
+			positions.Add(new Vector2(i, j + 1));
 		}
 		return positions;
 	}
@@ -127,16 +148,16 @@ public class MazeGenerator : MonoBehaviour {
 	/// <param name="j">The j position of the maze</param>
 	public List <Vector2> CheckAvailableNeighbors(int i, int j){
 		List <Vector2> positions = new List<Vector2>();
-		if(i>0 && ((maze[i - 1, j] == "p") || (maze[i - 1, j] == "s"))){
+		if(i>0 && (maze[i - 1, j] == "p")){
 			positions.Add(new Vector2(i-1,j));
 		}
-		if(i < width - 1 && ((maze[i + 1, j] == "p") || (maze[i + 1, j] == "s"))){
+		if(i < width - 1 && (maze[i + 1, j] == "p")){
 			positions.Add(new Vector2(i+1, j));
 		}
-		if(j > 0 && ((maze[i, j - 1] == "p") || (maze[i, j - 1] == "s"))){
+		if(j > 0 && (maze[i, j - 1] == "p")){
 			positions.Add(new Vector2(i, j-1));
 		}
-		if(j < height - 1 && ((maze[i, j + 1] == "p") || (maze[i, j + 1] == "s"))){
+		if(j < height - 1 && (maze[i, j + 1] == "p")){
 			positions.Add(new Vector2(i, j+1));
 		}
 		return positions;
@@ -150,7 +171,9 @@ public class MazeGenerator : MonoBehaviour {
 	public void Generate(Vector2 p, Vector2 prev){
 		int count = 0;
 		List<Vector2> nexts = CheckNeighbors((int)p.x,(int)p.y, out count);
+		//is it in (0, 0) or (width -1, heigth - 1)?
 		bool a = (p.x == 0 && p.y == 0)||(p.x == width-1 && p.y == height-1);
+		//is it in any border, be it right, left, top or bottom?
 		bool b =(p.x == 0 || p.y == 0 || p.x == width-1 || p.y == height-1);
 		int pr = 0;
 		if(nexts.Count == 1){
@@ -158,13 +181,18 @@ public class MazeGenerator : MonoBehaviour {
 			pr = random.Next(2);
 		}
 		if((nexts.Count < 3 && (!b)) || nexts.Count == 1 /*|| nexts.Count==0 */|| pr == 1){
-			maze[(int)p.x,(int)p.y] = "w";
+			maze[(int)p.x, (int)p.y] = "w";
 		}else{
-			maze[(int)p.x,(int)p.y] = "p";
+			maze[(int)p.x, (int)p.y] = "p";
+			//TODO: unused variable.
 			int times = 0;
 			while(nexts.Count != 0 /*&& times <4*/){
-				int index = Random.Range(0,nexts.Count);
-				if(index>nexts.Count - 1){
+				int index = Random.Range(0, nexts.Count);
+				//TODO: SERIOUSLY? ACABA DE GENERAR UN RANDOM ENTRE 0 Y COUNT EXCLUSIVO. PARA QUE PUTAS REVISA SI ES MAYOR QUE COUNT?!
+				//*has a heartattack*
+				if(index > nexts.Count - 1){
+					//TODO: potato is never printed. index is always less than count.
+					Debug.Log("potato");
 					index = index % nexts.Count;
 				}
 				Vector2 next = nexts[index];
@@ -176,19 +204,43 @@ public class MazeGenerator : MonoBehaviour {
 		}
 	}
 	
-	void CreateBarriers ()
+	void CreateBarriers (int[] exits)
 	{
 		for(int i = 0; i < width; i++){
-			GameObject b1 = (GameObject)Instantiate(wall, new Vector3(i * wall.renderer.bounds.size.x,wall.renderer.bounds.size.y / 2, -wall.renderer.bounds.size.z), wall.transform.rotation);
-			b1.transform.parent = this.transform;
-			GameObject b2 = (GameObject)Instantiate(wall, new Vector3(i * wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, height * wall.renderer.bounds.size.z), wall.transform.rotation);
-			b2.transform.parent = this.transform;
+			//up
+			if(i == exits[0]){
+				GameObject b1 = InstantiateObject(wall, i, -2);
+				b1.transform.parent = this.transform;
+			} else {
+				GameObject b1 = InstantiateObject(wall, i, -1);
+				b1.transform.parent = this.transform;
+			}
+			//down
+			if(i == exits[2]){
+				GameObject b2 = InstantiateObject(wall, i, height+1);
+				b2.transform.parent = this.transform;
+			} else {
+				GameObject b2 = InstantiateObject(wall, i, height);
+				b2.transform.parent = this.transform;
+			}
 		}
 		for(int i = 0; i < height; i++){
-			GameObject b1 = (GameObject)Instantiate(wall, new Vector3(-wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, i * wall.renderer.bounds.size.z), wall.transform.rotation);
-			b1.transform.parent = this.transform;
-			GameObject b2 = (GameObject)Instantiate(wall, new Vector3(width * wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, i * wall.renderer.bounds.size.z), wall.transform.rotation);
-			b2.transform.parent = this.transform;
+			//rigth
+			if(i == exits[1]){
+				GameObject b1 = InstantiateObject(wall, width+1, i);
+				b1.transform.parent = this.transform;
+			} else {
+				GameObject b1 = InstantiateObject(wall, width, i);
+				b1.transform.parent = this.transform;
+			}
+			//left
+			if(i == exits[3]){
+				GameObject b2 = InstantiateObject(wall, -2, i);
+				b2.transform.parent = this.transform;
+			} else {
+				GameObject b2 = InstantiateObject(wall, -1, i);
+				b2.transform.parent = this.transform;
+			}
 		}
 	}
 
@@ -312,11 +364,13 @@ public class MazeGenerator : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Places the exits on the maze.
+	/// Places the exits in the maze.
 	/// </summary>
-	/// <param name="start">Start of the i and j of the maze (no bounds).</param>
-	/// <param name="end">End of the i and j of the maze (no bounds).</param>
-	void PlaceExits(Vector2 start, Vector2 end){
+	/// <returns>The position the exits where placed.</returns>
+	/// <param name="start">Start of i and j in the maze (not the bounds).</param>
+	/// <param name="end">End of i and j in the maze (not the bounds).</param>
+	int[] PlaceExits(Vector2 start, Vector2 end){
+		int[] positions = new int[4];
 		for(int i = 1; i < GameMaster.Instance.NumbrerOfPlayers; i++){
 			Vector2[] range = SwitchCaseExits(i, start, end);
 
@@ -332,8 +386,42 @@ public class MazeGenerator : MonoBehaviour {
 
 			Vector2 exit = posibleExitsArr[(int) (Random.value * posibleExitsArr.Length-1)];
 
-			maze[(int)exit.x, (int)exit.y] = "s";
+			switch(i){
+			case 1:
+				//la parte superior
+				positions[0] = (int)exit.x;
+				InstantiateObject(exitGameObject, (int)exit.x, (int)exit.y-1);
+				if(exit.y != 0){
+					maze[(int) exit.x,(int) exit.y-1] = "s";
+				}
+				break;
+			case 2:
+				//la parte derecha
+				positions[1] = (int)exit.y;
+				InstantiateObject(exitGameObject, (int)exit.x+1, (int)exit.y);
+				if(exit.x != width-1){
+					maze[(int) exit.x+1,(int) exit.y] = "s";
+				}
+				break;
+			case 3:
+				//la parte inferior
+				positions[2] = (int)exit.x;
+				InstantiateObject(exitGameObject, (int)exit.x, (int)exit.y+1);
+				if(exit.y != height-1){
+					maze[(int) exit.x,(int) exit.y+1] = "s";
+				}
+				break;
+			case 4:
+				//la parte izquierda
+				positions[3] = (int)exit.y;
+				InstantiateObject(exitGameObject, (int)exit.x-1, (int)exit.y);
+				if(exit.x != 0){
+					maze[(int) exit.x-1,(int) exit.y] = "s";
+				}
+				break;
+			}
 		}
+		return positions;
 	}
 
 	GameObject InstantiateObject(GameObject obj, int i, int j){
