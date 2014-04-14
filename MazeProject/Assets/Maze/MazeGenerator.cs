@@ -208,7 +208,7 @@ public class MazeGenerator : MonoBehaviour {
 	{
 		for(int i = 0; i < width; i++){
 			//up
-			if(i == exits[0]){
+			if(i == exits[0] && exits[0] != -1){
 				GameObject b1 = InstantiateObject(wall, i, -2);
 				b1.transform.parent = this.transform;
 			} else {
@@ -216,7 +216,7 @@ public class MazeGenerator : MonoBehaviour {
 				b1.transform.parent = this.transform;
 			}
 			//down
-			if(i == exits[2]){
+			if(i == exits[2] && exits[2] != -1){
 				GameObject b2 = InstantiateObject(wall, i, height+1);
 				b2.transform.parent = this.transform;
 			} else {
@@ -226,7 +226,7 @@ public class MazeGenerator : MonoBehaviour {
 		}
 		for(int i = 0; i < height; i++){
 			//rigth
-			if(i == exits[1]){
+			if(i == exits[1] && exits[1] != -1){
 				GameObject b1 = InstantiateObject(wall, width+1, i);
 				b1.transform.parent = this.transform;
 			} else {
@@ -234,7 +234,7 @@ public class MazeGenerator : MonoBehaviour {
 				b1.transform.parent = this.transform;
 			}
 			//left
-			if(i == exits[3]){
+			if(i == exits[3] && exits[3] != -1){
 				GameObject b2 = InstantiateObject(wall, -2, i);
 				b2.transform.parent = this.transform;
 			} else {
@@ -371,6 +371,11 @@ public class MazeGenerator : MonoBehaviour {
 	/// <param name="end">End of i and j in the maze (not the bounds).</param>
 	int[] PlaceExits(Vector2 start, Vector2 end){
 		int[] positions = new int[4];
+
+		for(int i = 0; i<4; i++){
+			positions[i] = -1;
+		}
+
 		for(int i = 1; i < GameMaster.Instance.NumbrerOfPlayers; i++){
 			Vector2[] range = SwitchCaseExits(i, start, end);
 
