@@ -82,11 +82,10 @@ public class MazeGenerator : MonoBehaviour {
 					} else {
 						mazeIsSoundTrigger[i,j] = false;
 					}
-
 				} 
 			}
 		}
-		Instantiate(human, new Vector3(startingX * wall.renderer.bounds.size.x, human.transform.position.y, startingY * wall.renderer.bounds.size.y),
+		Instantiate(human, new Vector3(startingX * wall.renderer.bounds.size.x, human.transform.position.y, startingY * wall.renderer.bounds.size.z),
 		            human.transform.rotation);
 		PlaceFloor();
 		PlaceSoundTriggers();
