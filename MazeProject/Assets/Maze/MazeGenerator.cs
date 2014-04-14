@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class MazeGenerator : MonoBehaviour {
+
+	public GameObject human;
 	/// <summary>
 	/// The floor.
 	/// </summary>
@@ -23,6 +25,10 @@ public class MazeGenerator : MonoBehaviour {
 	/// The size of the maze in y.
 	/// </summary>
 	public int height;
+	/// <summary>
+	/// x & y where the algorithm starts running.
+	/// </summary>
+	public int startingX, startingY;
 	private string[,] maze;
 
 	void Start () {
@@ -32,9 +38,11 @@ public class MazeGenerator : MonoBehaviour {
 				maze[i, j] = "n";
 			}
 		}
-		maze[0, 0] = "p"; //TODO: Try starting in the center.
+		maze[startingX, startingY] = "p"; //TODO: Try starting in the center.
 		System.Random r = new System.Random();
-		Generate(Vector2.zero,new Vector2(0, -1));
+		Generate(Vector2.zero, new Vector2(startingX, startingY - 1));
+		//		Generate(Vector2.zero, new Vector2(0, -1));
+		ClearSurroundings(startingX, startingY, 1);
 		for(int i = 0; i < width; i++){
 			for (int j = 0; j < height; j++){
 				if(maze[i, j] == "w"){
@@ -51,8 +59,26 @@ public class MazeGenerator : MonoBehaviour {
 				}
 			}
 		}
+		Instantiate(human, new Vector3(startingX * wall.renderer.bounds.size.x, human.transform.position.y, startingY * wall.renderer.bounds.size.y),
+		            human.transform.rotation);
 		PlaceFloor();
 		CreateBarriers();
+	}
+	/// <summary>
+	/// Clears the surroundings of the specific tile at (x, y).
+	/// </summary>
+	/// <param name="startingX">x coordinate.</param>
+	/// <param name="startingY">y coordinate.</param>
+	/// <param name="range">The range around to clear.</param>
+	/// <param name="width">The bigger matrix's width</param>
+	/// <param name="heigth">The bigger matrix's heigth</param>
+	void ClearSurroundings (int x, int y, int range)
+	{
+		for(int i = x - range; i <= x + range; i++){
+			for(int j = y - range; j <= y + range; j++){
+				maze[i, j] = "p";
+			}
+		}
 	}
 
 	/// <summary>
@@ -66,21 +92,21 @@ public class MazeGenerator : MonoBehaviour {
 		List <Vector2> positions = new List<Vector2>();
 		int max = 0;
 		count = 0;
-		if(i>0 && (maze[i - 1, j] == "n" || maze[i - 1, j] == "w")){
+		if(i > 0 && (maze[i - 1, j] == "n" || maze[i - 1, j] == "w")){
 			count++;
-			positions.Add(new Vector2(i-1,j));
+			positions.Add(new Vector2(i - 1,j));
 		}
 		if(i < width - 1 && (maze[i + 1, j] == "n" || maze[i + 1, j] == "w")){
 			count++;
-			positions.Add(new Vector2(i+1, j));
+			positions.Add(new Vector2(i + 1, j));
 		}
 		if(j > 0 && (maze[i, j - 1] == "n" || maze[i , j - 1] == "w")){
 			count++;
-			positions.Add(new Vector2(i, j-1));
+			positions.Add(new Vector2(i, j - 1));
 		}
 		if(j < height - 1 && (maze[i, j + 1] == "n" || maze[i, j+1] == "w")){
 			count++;
-			positions.Add(new Vector2(i, j+1));
+			positions.Add(new Vector2(i, j + 1));
 		}
 		return positions;
 	}
@@ -93,7 +119,9 @@ public class MazeGenerator : MonoBehaviour {
 	public void Generate(Vector2 p, Vector2 prev){
 		int count = 0;
 		List<Vector2> nexts = CheckNeighbors((int)p.x,(int)p.y, out count);
+		//is it in (0, 0) or (width -1, heigth - 1)?
 		bool a = (p.x == 0 && p.y == 0)||(p.x == width-1 && p.y == height-1);
+		//is it in any border, be it right, left, top or bottom?
 		bool b =(p.x == 0 || p.y == 0 || p.x == width-1 || p.y == height-1);
 		int pr = 0;
 		if(nexts.Count == 1){
@@ -101,13 +129,18 @@ public class MazeGenerator : MonoBehaviour {
 			pr = random.Next(2);
 		}
 		if((nexts.Count < 3 && (!b)) || nexts.Count == 1 /*|| nexts.Count==0 */|| pr == 1){
-			maze[(int)p.x,(int)p.y] = "w";
+			maze[(int)p.x, (int)p.y] = "w";
 		}else{
-			maze[(int)p.x,(int)p.y] = "p";
+			maze[(int)p.x, (int)p.y] = "p";
+			//TODO: unused variable.
 			int times = 0;
 			while(nexts.Count != 0 /*&& times <4*/){
-				int index = Random.Range(0,nexts.Count);
-				if(index>nexts.Count - 1){
+				int index = Random.Range(0, nexts.Count);
+				//TODO: SERIOUSLY? ACABA DE GENERAR UN RANDOM ENTRE 0 Y COUNT EXCLUSIVO. PARA QUE PUTAS REVISA SI ES MAYOR QUE COUNT?!
+				//*has a heartattack*
+				if(index > nexts.Count - 1){
+					//TODO: potato is never printed. index is always less than count.
+					Debug.Log("potato");
 					index = index % nexts.Count;
 				}
 				Vector2 next = nexts[index];
