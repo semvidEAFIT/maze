@@ -12,6 +12,14 @@ public class MazeGenerator : MonoBehaviour {
 	/// </summary>
 	public GameObject wall;
 	/// <summary>
+	/// The sound trigger.
+	/// </summary>
+	public GameObject soundTrigger;
+	/// <summary>
+	/// The sound trigger chance of appearing (in %).
+	/// </summary>
+	public int soundTriggerChance = 65;
+	/// <summary>
 	/// The wall materials.
 	/// </summary>
 	public Material[] wallMaterials;
@@ -23,13 +31,26 @@ public class MazeGenerator : MonoBehaviour {
 	/// The size of the maze in y.
 	/// </summary>
 	public int height;
+	/// <summary>
+	/// The chance of deleting SoundTriggers after the initial pass.
+	/// </summary>
+	public int chanceOfDel = 95;
+
 	private string[,] maze;
+	/// <summary>
+	/// The places in the maze where there is a sound trigger.
+	/// </summary>
+	private bool[,] mazeIsSoundTrigger;
+	private bool[,] mazeSoundTriggerVisited;
 
 	void Start () {
 		maze = new string[width, height];
+		mazeIsSoundTrigger = new bool[width, height];
+		mazeSoundTriggerVisited = new bool[width,height];
 		for(int i = 0; i < width; i++){
 			for (int j = 0; j < height; j++){
 				maze[i, j] = "n";
+				mazeIsSoundTrigger[i, j] = false;
 			}
 		}
 		maze[0, 0] = "p"; //TODO: Try starting in the center.
@@ -48,10 +69,18 @@ public class MazeGenerator : MonoBehaviour {
 					int index = r.Next(wallMaterials.Length);
 					go.renderer.material = wallMaterials[index];
 					go.transform.parent = this.transform;
-				}
+				} else if(maze[i,j] == "p"){ 
+					if(r.Next(100) <= soundTriggerChance){//place soundTrigger
+						mazeIsSoundTrigger[i,j] = true;
+					} else {
+						mazeIsSoundTrigger[i,j] = false;
+					}
+
+				} 
 			}
 		}
 		PlaceFloor();
+		PlaceSoundTriggers();
 		CreateBarriers();
 	}
 
@@ -80,6 +109,29 @@ public class MazeGenerator : MonoBehaviour {
 		}
 		if(j < height - 1 && (maze[i, j + 1] == "n" || maze[i, j+1] == "w")){
 			count++;
+			positions.Add(new Vector2(i, j+1));
+		}
+		return positions;
+	}
+
+	/// <summary>
+	/// Checks the available neighbors of a maze tile.
+	/// </summary>
+	/// <returns>The available neighbors.</returns>
+	/// <param name="i">The i position of the maze</param>
+	/// <param name="j">The j position of the maze</param>
+	public List <Vector2> CheckAvailableNeighbors(int i, int j){
+		List <Vector2> positions = new List<Vector2>();
+		if(i>0 && (maze[i - 1, j] == "p")){
+			positions.Add(new Vector2(i-1,j));
+		}
+		if(i < width - 1 && (maze[i + 1, j] == "p")){
+			positions.Add(new Vector2(i+1, j));
+		}
+		if(j > 0 && (maze[i, j - 1] == "p")){
+			positions.Add(new Vector2(i, j-1));
+		}
+		if(j < height - 1 && (maze[i, j + 1] == "p")){
 			positions.Add(new Vector2(i, j+1));
 		}
 		return positions;
@@ -137,12 +189,72 @@ public class MazeGenerator : MonoBehaviour {
 
 	void PlaceFloor ()
 	{
-		Vector3 scale = new Vector3(width * wall.renderer.bounds.size.x, 0f, 
-		                            height * wall.renderer.bounds.size.z);
+		Vector3 scale = new Vector3(width * wall.renderer.bounds.size.x+10, 0f, 
+		                            height * wall.renderer.bounds.size.z+10);
 		Vector3 position = (scale/2f) - wall.renderer.bounds.size;
 		position.y = 0;
 
 		GameObject g = (GameObject)Instantiate(floor, position, Quaternion.identity);
 		g.transform.localScale = scale;
+
 	}
+
+	void PlaceSoundTriggers(){
+		for(int i = 0; i < width; i++){
+			for (int j = 0; j < height; j++){
+				if(mazeIsSoundTrigger[i,j]){
+					GameObject go = (GameObject)Instantiate(
+						soundTrigger,
+						new Vector3(i * wall.renderer.bounds.size.x, 
+					            wall.renderer.bounds.size.y / 2, 
+					            j * wall.renderer.bounds.size.z), 
+						floor.transform.rotation
+					);
+					go.transform.parent = this.transform;
+
+					cleanVisited();
+					checkSoundTriggerNeighbors(new Vector2(i,j), width+1);
+				}
+			}
+		}
+	}
+
+	void checkSoundTriggerNeighbors(Vector2 pos, int val){
+		System.Random r = new System.Random();
+
+		mazeSoundTriggerVisited[(int)pos.x, (int)pos.y] = true;
+
+		if(val == 1) return ;
+
+		if(mazeIsSoundTrigger[(int)pos.x, (int)pos.y]){
+			if(val != width+1){
+				int ran = r.Next(100);
+				if((ran) < (100 - chanceOfDel * ((float) val/ (float)width))){  //determinar si se queda o no, 
+					mazeIsSoundTrigger[(int)pos.x,(int)pos.y] = true;           //menor probabilidad de dejarlo si esta cerca
+
+				} else {
+					mazeIsSoundTrigger[(int)pos.x,(int)pos.y] = false;
+				}
+			} 
+		}
+
+		List<Vector2> neighbors = CheckAvailableNeighbors((int) pos.x, (int) pos.y);
+
+		foreach(Vector2 next in neighbors){
+			if(mazeSoundTriggerVisited[(int)next.x, (int)next.y] == false){
+				checkSoundTriggerNeighbors(next, val-1);
+			}
+		}
+
+
+	}
+
+	void cleanVisited(){
+		for(int i = 0; i < width; i++){
+			for(int j = 0; j < height; j++){
+				mazeSoundTriggerVisited[i,j] = false;
+			}
+		}
+	}
+
 }
