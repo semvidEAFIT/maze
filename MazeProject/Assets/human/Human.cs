@@ -53,75 +53,68 @@ public class Human : MonoBehaviour {
 	}
 
 	void Update () {
-		if((Input.GetAxis("Horizontal")!=0 || Input.GetAxis("Vertical")!=0) && !audio.isPlaying){
-			Play();
-		}
-
-
-		if(canRun){
-			if(Input.GetAxis("sprint") > 0){
-				motor.movement.maxForwardSpeed = sprintSpeed;
-
-				if(sprintTimeLeft <= 0){
-					canRun = false;
-					timeRested = 0;
-				} else {
-					sprintTimeLeft -= Time.deltaTime;
-				}
-			}
-			else{
-				motor.movement.maxForwardSpeed = defaultSpeed;
-				if(sprintTimeLeft < sprintTime){
-					sprintTimeLeft += Time.deltaTime * regenRate;
-				}
-			}
-		}
-		else{
-			motor.movement.maxForwardSpeed = defaultSpeed;
-			timeRested += Time.deltaTime * regenRate;
-			if(timeRested >= restTime){
-				canRun = true;
-				timeRested = 0;
-				sprintTimeLeft = sprintTime;
-			}
-		}
-
-
-		
-		
-		//		if(sprintTimeLeft <= 0) {
-//			canRun = false;
-//			motor.movement.maxForwardSpeed = defaultSpeed;
-//			timeRested = 0;
-//		}
-//
-//		if(timeRested >= restTime){
-//			canRun = true;
-//		}
-//
-//		if(Input.GetAxis("sprint") != 0 && sprintTimeLeft > 0 && canRun){
-//			motor.movement.maxForwardSpeed =  sprintSpeed;
-//			sprintTimeLeft-=Time.deltaTime;
-//
-//			Debug.Log("runnnnnnnnn");
-//		}
-//		if(sprintTimeLeft < sprintTime && !canRun){
-//			sprintTimeLeft += Time.deltaTime;
-//		}
-//
-//		if(timeRested <= restTime){
-//			timeRested += Time.deltaTime;
-//		}
-//
-		Debug.Log(sprintTimeLeft);
+        Run();
 	}
 
+    /// <summary>
+    /// Checks if the player is able to run in a given moment, if so,
+    /// changes the speed used by the CharacterMotor component.
+    /// If the player runs a given amount of time, he must rest before
+    /// running again.
+    /// </summary>
+    private void Run() {
+        //TODO: Delete this line, this line is necessary because we don't have the animation yet.
+        if ((Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0) && !audio.isPlaying)
+        {
+            PlayStep();
+        }
+
+        //The user still has time to run.
+        if (canRun)
+        {
+            if (Input.GetAxis("sprint") > 0)
+            {
+                motor.movement.maxForwardSpeed = sprintSpeed;
+
+                //Run time limit logic.
+                if (sprintTimeLeft <= 0)
+                {
+                    canRun = false;
+                    timeRested = 0;
+                }
+                else
+                {
+                    sprintTimeLeft -= Time.deltaTime;
+                }
+            }
+            else
+            {
+                //Resting time logic.
+                motor.movement.maxForwardSpeed = defaultSpeed;
+                if (sprintTimeLeft < sprintTime)
+                {
+                    sprintTimeLeft += Time.deltaTime * regenRate;
+                }
+            }
+        }
+        else
+        {
+            //Resting time logic.
+            motor.movement.maxForwardSpeed = defaultSpeed;
+            timeRested += Time.deltaTime * regenRate;
+            if (timeRested >= restTime)
+            {
+                canRun = true;
+                timeRested = 0;
+                sprintTimeLeft = sprintTime;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Plays the step sound, intended to be used with the Animation.
+    /// </summary>
 	public void PlayStep(){
 		audio.PlayOneShot(stepSound);
-	}
-
-	public void Play(){
-		audio.clip = stepSound;
-		audio.Play();
 	}
 }
