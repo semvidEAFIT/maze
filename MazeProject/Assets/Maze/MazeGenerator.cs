@@ -242,6 +242,12 @@ public class MazeGenerator : MonoBehaviour {
 				b2.transform.parent = this.transform;
 			}
 		}
+
+		//corners
+		GameObject tl = InstantiateObject(wall, -1,-1);//top-left
+		GameObject tr = InstantiateObject(wall, width,-1);//top-rigth
+		GameObject bl = InstantiateObject(wall, -1,height);//bottom-left
+		GameObject br = InstantiateObject(wall, width,height);//bottom-rigth
 	}
 
 	void PlaceFloor ()
