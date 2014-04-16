@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class MazeGenerator : MonoBehaviour {
+public class Maze : MonoBehaviour {
 
 	public GameObject human;
 	/// <summary>
@@ -52,7 +52,16 @@ public class MazeGenerator : MonoBehaviour {
 	private bool[,] mazeIsSoundTrigger;
 	private bool[,] mazeSoundTriggerVisited;
 
+    private static Maze instance;
+
+    public static Maze Instance
+    {
+        get { return Maze.instance; }
+    }
+
 	void Start () {
+        if (instance != null) Destroy(gameObject); // Don't create this maze.
+
 		startingX--; //para no tener que poner la mitad menos uno en el editor
 		startingY--;
 		maze = new string[width, height];
@@ -93,6 +102,8 @@ public class MazeGenerator : MonoBehaviour {
 		PlaceSoundTriggers();
 		CreateBarriers(exitsPos);
 		PlaceFloor();
+
+        instance = this;
 	}
 
 	/// <summary>
@@ -382,7 +393,7 @@ public class MazeGenerator : MonoBehaviour {
 			positions[i] = -1;
 		}
 
-		for(int i = 1; i < GameMaster.Instance.NumbrerOfPlayers; i++){
+		for(int i = 1; i < GameMaster.Instance.NumberOfPlayers; i++){
 			Vector2[] range = SwitchCaseExits(i, start, end);
 
 			Vector2[] posibleExitsArr = FindPosibleExitsInRange(range[0],range[1]).ToArray();
@@ -435,7 +446,7 @@ public class MazeGenerator : MonoBehaviour {
 		return positions;
 	}
 
-	GameObject InstantiateObject(GameObject obj, int i, int j){
+	public GameObject InstantiateObject(GameObject obj, int i, int j){
 		GameObject go = (GameObject)Instantiate(
 			obj,
 			new Vector3(i * wall.renderer.bounds.size.x, 

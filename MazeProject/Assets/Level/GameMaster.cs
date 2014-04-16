@@ -11,18 +11,17 @@ public class GameMaster : MonoBehaviour {
 	#region Variables
 	private static GameMaster instance;
 	private LevelGUI levelGUI;
-	public int numbrerOfPlayers = 5;//solo esta publico para probar temporalmente.
+    private int numberOfPlayers;
+    public GameObject mazeGenerator;
+    public GameObject human;
+    public GameObject monster;
 	#endregion
 
-	public int NumbrerOfPlayers {
+	public int NumberOfPlayers {
 		get {
-			return numbrerOfPlayers;
-		}
-		set {
-			numbrerOfPlayers = value;
+			return numberOfPlayers;
 		}
 	}
-
 
 	public static GameMaster Instance {
 		get{
@@ -32,6 +31,12 @@ public class GameMaster : MonoBehaviour {
 
 	void Start(){
 		levelGUI.State = EState.Playing;
+        numberOfPlayers = Networker.Instance.players.Count;
+        if(Network.isServer){
+            Instantiate(mazeGenerator);
+        }
+        //TODO: Spawn players in different positions and different prefabs
+        Maze.Instance.InstantiateObject(human, Maze.Instance.startingX, Maze.Instance.startingY);
 	}
 
 	// Use this for initialization
