@@ -97,10 +97,17 @@ public class LobbyGUI : MonoBehaviour
 		GUI.EndGroup();
 
 		//Ready toggle
-		int readyHeigh = (Screen.height/4) -20; //espacio en y que ocupa
-		int readyWidth = (Screen.width/6) -20; //espacio en x que ocupa
-		GUI.BeginGroup(new Rect((5*Screen.width/6)+10, 3*Screen.height/4, readyWidth, readyHeigh));
+		int readyHeigh = Screen.height/6; //espacio en y que ocupa
+		int readyWidth = Screen.width/7; //espacio en x que ocupa
+		GUI.BeginGroup(new Rect(5*Screen.width/6, 4*Screen.height/5, readyWidth, readyHeigh));
 		DrawReady(readyWidth, readyHeigh);
+		GUI.EndGroup();
+
+		//Back Button
+		int backHeigh = Screen.width/18;//espacio en y
+		int backWidth = Screen.width/9;//espacio en x
+		GUI.BeginGroup(new Rect(7*Screen.width/8, 10, backWidth, backHeigh));
+		DrawBack(backWidth, backHeigh);
 		GUI.EndGroup();
 	}
 
@@ -123,6 +130,12 @@ public class LobbyGUI : MonoBehaviour
 		if(GUI.Button(new Rect(0,0,xSize,ySize), "Ready")){
 			playersRedy[0] = !playersRedy[0];
 		}
-		GUI.Toggle(new Rect(3*xSize/4, (ySize/2) - 10, 15, ySize), playersRedy[0], "");
+		GUI.Toggle(new Rect(3*xSize/4, (ySize/2) - 10, 15, ySize), playersRedy[0], ""); //TODO: change values to the final texture
+	}
+
+	private void DrawBack(int xSize, int ySize){
+		if(GUI.Button(new Rect(0,0, xSize, ySize), "<<Back")){
+			//TODO: go to server browser
+		}
 	}
 }
