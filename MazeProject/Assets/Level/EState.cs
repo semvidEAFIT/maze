@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum GameState
+public enum EState
 {
     Playing, Ended
 }

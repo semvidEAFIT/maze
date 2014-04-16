@@ -18,6 +18,10 @@ public class MazeGenerator : MonoBehaviour {
 	/// </summary>
 	public GameObject soundTrigger;
 	/// <summary>
+	/// The exit prefab (of the maze).
+	/// </summary>
+	public GameObject exitGameObject;
+	/// <summary>
 	/// The sound trigger chance of appearing (in %).
 	/// </summary>
 	public int soundTriggerChance = 65;
@@ -49,6 +53,8 @@ public class MazeGenerator : MonoBehaviour {
 	private bool[,] mazeSoundTriggerVisited;
 
 	void Start () {
+		startingX--; //para no tener que poner la mitad menos uno en el editor
+		startingY--;
 		maze = new string[width, height];
 		mazeIsSoundTrigger = new bool[width, height];
 		mazeSoundTriggerVisited = new bool[width,height];
@@ -58,47 +64,43 @@ public class MazeGenerator : MonoBehaviour {
 				mazeIsSoundTrigger[i, j] = false;
 			}
 		}
-		maze[startingX, startingY] = "p"; //TODO: Try starting in the center.
+		maze[startingX, startingY] = "p";
 		System.Random r = new System.Random();
+
 		Generate(Vector2.zero, new Vector2(startingX, startingY - 1));
-		//		Generate(Vector2.zero, new Vector2(0, -1));
 		ClearSurroundings(startingX, startingY, 1);
+
+		int[] exitsPos = PlaceExits(new Vector2(0, 0), new Vector2(width, height));
+
 		for(int i = 0; i < width; i++){
 			for (int j = 0; j < height; j++){
 				if(maze[i, j] == "w"){
-					GameObject go = (GameObject)Instantiate(
-						wall,
-                        new Vector3(i * wall.renderer.bounds.size.x, 
-					            wall.renderer.bounds.size.y / 2, 
-					            j * wall.renderer.bounds.size.z), 
-                        		floor.transform.rotation
-                        );
+					GameObject go = InstantiateObject(wall, i, j);
+					go.transform.parent = this.transform;
 					int index = r.Next(wallMaterials.Length);
 					go.renderer.material = wallMaterials[index];
-					go.transform.parent = this.transform;
 				} else if(maze[i,j] == "p"){ 
 					if(r.Next(100) <= soundTriggerChance){//place soundTrigger
-						mazeIsSoundTrigger[i,j] = true;
+						mazeIsSoundTrigger[i, j] = true;
 					} else {
-						mazeIsSoundTrigger[i,j] = false;
+						mazeIsSoundTrigger[i, j] = false;
 					}
+
 				} 
 			}
 		}
-		Instantiate(human, new Vector3(startingX * wall.renderer.bounds.size.x, human.transform.position.y, startingY * wall.renderer.bounds.size.z),
-		            human.transform.rotation);
-		PlaceFloor();
+		InstantiateObject(human, startingX, startingY);
 		PlaceSoundTriggers();
-		CreateBarriers();
+		CreateBarriers(exitsPos);
+		PlaceFloor();
 	}
+
 	/// <summary>
 	/// Clears the surroundings of the specific tile at (x, y).
 	/// </summary>
 	/// <param name="startingX">x coordinate.</param>
 	/// <param name="startingY">y coordinate.</param>
 	/// <param name="range">The range around to clear.</param>
-	/// <param name="width">The bigger matrix's width</param>
-	/// <param name="heigth">The bigger matrix's heigth</param>
 	void ClearSurroundings (int x, int y, int range)
 	{
 		for(int i = x - range; i <= x + range; i++){
@@ -141,7 +143,7 @@ public class MazeGenerator : MonoBehaviour {
 	/// <summary>
 	/// Checks the available neighbors of a maze tile.
 	/// </summary>
-	/// <returns>The available neighbors.</returns>
+	/// <returns>The available neighbors in a vector2 list.</returns>
 	/// <param name="i">The i position of the maze</param>
 	/// <param name="j">The j position of the maze</param>
 	public List <Vector2> CheckAvailableNeighbors(int i, int j){
@@ -202,20 +204,50 @@ public class MazeGenerator : MonoBehaviour {
 		}
 	}
 	
-	void CreateBarriers ()
+	void CreateBarriers (int[] exits)
 	{
 		for(int i = 0; i < width; i++){
-			GameObject b1 = (GameObject)Instantiate(wall, new Vector3(i * wall.renderer.bounds.size.x,wall.renderer.bounds.size.y / 2, -wall.renderer.bounds.size.z), wall.transform.rotation);
-			b1.transform.parent = this.transform;
-			GameObject b2 = (GameObject)Instantiate(wall, new Vector3(i * wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, height * wall.renderer.bounds.size.z), wall.transform.rotation);
-			b2.transform.parent = this.transform;
+			//up
+			if(i == exits[0] && exits[0] != -1){
+				GameObject b1 = InstantiateObject(wall, i, -2);
+				b1.transform.parent = this.transform;
+			} else {
+				GameObject b1 = InstantiateObject(wall, i, -1);
+				b1.transform.parent = this.transform;
+			}
+			//down
+			if(i == exits[2] && exits[2] != -1){
+				GameObject b2 = InstantiateObject(wall, i, height+1);
+				b2.transform.parent = this.transform;
+			} else {
+				GameObject b2 = InstantiateObject(wall, i, height);
+				b2.transform.parent = this.transform;
+			}
 		}
 		for(int i = 0; i < height; i++){
-			GameObject b1 = (GameObject)Instantiate(wall, new Vector3(-wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, i * wall.renderer.bounds.size.z), wall.transform.rotation);
-			b1.transform.parent = this.transform;
-			GameObject b2 = (GameObject)Instantiate(wall, new Vector3(width * wall.renderer.bounds.size.x, wall.renderer.bounds.size.y / 2, i * wall.renderer.bounds.size.z), wall.transform.rotation);
-			b2.transform.parent = this.transform;
+			//rigth
+			if(i == exits[1] && exits[1] != -1){
+				GameObject b1 = InstantiateObject(wall, width+1, i);
+				b1.transform.parent = this.transform;
+			} else {
+				GameObject b1 = InstantiateObject(wall, width, i);
+				b1.transform.parent = this.transform;
+			}
+			//left
+			if(i == exits[3] && exits[3] != -1){
+				GameObject b2 = InstantiateObject(wall, -2, i);
+				b2.transform.parent = this.transform;
+			} else {
+				GameObject b2 = InstantiateObject(wall, -1, i);
+				b2.transform.parent = this.transform;
+			}
 		}
+
+		//corners
+		GameObject tl = InstantiateObject(wall, -1,-1);//top-left
+		GameObject tr = InstantiateObject(wall, width,-1);//top-rigth
+		GameObject bl = InstantiateObject(wall, -1,height);//bottom-left
+		GameObject br = InstantiateObject(wall, width,height);//bottom-rigth
 	}
 
 	void PlaceFloor ()
@@ -234,13 +266,7 @@ public class MazeGenerator : MonoBehaviour {
 		for(int i = 0; i < width; i++){
 			for (int j = 0; j < height; j++){
 				if(mazeIsSoundTrigger[i,j]){
-					GameObject go = (GameObject)Instantiate(
-						soundTrigger,
-						new Vector3(i * wall.renderer.bounds.size.x, 
-					            wall.renderer.bounds.size.y / 2, 
-					            j * wall.renderer.bounds.size.z), 
-						floor.transform.rotation
-					);
+					GameObject go = InstantiateObject(soundTrigger, i, j);
 					go.transform.parent = this.transform;
 
 					cleanVisited();
@@ -288,4 +314,135 @@ public class MazeGenerator : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Finds the posible exits in the given range (open floor in the maze).
+	/// </summary>
+	/// <returns>The posible exits.</returns>
+	/// <param name="start">Start of the range.</param>
+	/// <param name="end">End of the range.</param>
+	List<Vector2> FindPosibleExitsInRange(Vector2 start, Vector2 end){
+		List<Vector2> ans = new List<Vector2>();
+		if(start.x == end.x) {
+			int i = (int) start.x;
+			for(int j = 0; j < height; j++){
+				if(maze[i,j] == "p") {
+					ans.Add(new Vector2(i,j));
+				}
+			}
+		} else {
+			int j = (int) start.y;
+			for(int i = 0; i < width; i++){
+				if(maze[i,j] == "p"){
+					ans.Add(new Vector2(i,j));
+				}
+			}
+		}
+
+		return ans;
+	}
+
+
+	Vector2[] SwitchCaseExits(int i, Vector2 start, Vector2 end){
+		Vector2[] ans = new Vector2[2];
+		switch(i){
+		case 1:
+			//la parte superior
+			ans[0] = new Vector2(start.x,start.y);
+			ans[1] = new Vector2(end.x-1,start.y);
+			break;
+		case 2:
+			//la parte derecha
+			ans[0] = new Vector2(end.x-1, start.y);
+			ans[1] = new Vector2(end.x-1, end.y-1);
+			break;
+		case 3:
+			//la parte inferior
+			ans[0] = new Vector2(end.x-1, end.y-1);
+			ans[1] = new Vector2(start.x, end.y-1);
+			break;
+		case 4:
+			//la parte izquierda
+			ans[0] = new Vector2(start.x, end.y-1);
+			ans[1] = new Vector2(start.x,start.y);
+			break;
+		}
+		return ans;
+	}
+
+	/// <summary>
+	/// Places the exits in the maze.
+	/// </summary>
+	/// <returns>The position the exits where placed.</returns>
+	/// <param name="start">Start of i and j in the maze (not the bounds).</param>
+	/// <param name="end">End of i and j in the maze (not the bounds).</param>
+	int[] PlaceExits(Vector2 start, Vector2 end){
+		int[] positions = new int[4];
+
+		for(int i = 0; i<4; i++){
+			positions[i] = -1;
+		}
+
+		for(int i = 1; i < GameMaster.Instance.NumbrerOfPlayers; i++){
+			Vector2[] range = SwitchCaseExits(i, start, end);
+
+			Vector2[] posibleExitsArr = FindPosibleExitsInRange(range[0],range[1]).ToArray();
+
+			int j = 0;
+			while(posibleExitsArr.Length == 0){
+				Vector2 tmpS = new Vector2(start.x+j, start.y+j);
+				Vector2 tmpE = new Vector2(end.x-j, end.y-j);
+				range = SwitchCaseExits(i,tmpS,tmpE);
+				posibleExitsArr = FindPosibleExitsInRange(range[0],range[1]).ToArray();
+			}
+
+			Vector2 exit = posibleExitsArr[(int) (Random.value * posibleExitsArr.Length-1)];
+
+			switch(i){
+			case 1:
+				//la parte superior
+				positions[0] = (int)exit.x;
+				InstantiateObject(exitGameObject, (int)exit.x, (int)exit.y-1);
+				if(exit.y != 0){
+					maze[(int) exit.x,(int) exit.y-1] = "s";
+				}
+				break;
+			case 2:
+				//la parte derecha
+				positions[1] = (int)exit.y;
+				InstantiateObject(exitGameObject, (int)exit.x+1, (int)exit.y);
+				if(exit.x != width-1){
+					maze[(int) exit.x+1,(int) exit.y] = "s";
+				}
+				break;
+			case 3:
+				//la parte inferior
+				positions[2] = (int)exit.x;
+				InstantiateObject(exitGameObject, (int)exit.x, (int)exit.y+1);
+				if(exit.y != height-1){
+					maze[(int) exit.x,(int) exit.y+1] = "s";
+				}
+				break;
+			case 4:
+				//la parte izquierda
+				positions[3] = (int)exit.y;
+				InstantiateObject(exitGameObject, (int)exit.x-1, (int)exit.y);
+				if(exit.x != 0){
+					maze[(int) exit.x-1,(int) exit.y] = "s";
+				}
+				break;
+			}
+		}
+		return positions;
+	}
+
+	GameObject InstantiateObject(GameObject obj, int i, int j){
+		GameObject go = (GameObject)Instantiate(
+			obj,
+			new Vector3(i * wall.renderer.bounds.size.x, 
+		            wall.renderer.bounds.size.y / 2, 
+		            j * wall.renderer.bounds.size.z), 
+			floor.transform.rotation
+			);
+		return go;
+	}
 }
