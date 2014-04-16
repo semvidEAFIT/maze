@@ -10,19 +10,23 @@ public class LobbyHandler : MonoBehaviour {
         ready = new Dictionary<string, bool>(Networker.MAXPLAYERS);
     }
 
-    void Start() { 
-        //TODO: Join Match
+    void Start() {
+        networkView.RPC("JoinedMatch", RPCMode.AllBuffered, "Player");
     }
 
     [RPC]
     public void JoinedMatch(string userName) {
         ready.Add(userName, false);
         Networker.Instance.players.Add(userName);
+        Debug.Log(userName + " has joined the match.");
     }
 
     public void SetReady(string userName, bool isReady)
     {
-
+        JSONObject json = new JSONObject();
+        json.Add("userName", userName);
+        json.Add("isReady", isReady);
+        networkView.RPC("UpdateReady", RPCMode.AllBuffered, json);
     }
     
     [RPC]
