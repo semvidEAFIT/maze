@@ -4,13 +4,11 @@ using System.Collections;
 /// <summary>
 /// In charge of managing all control events and other situations that
 /// changes the state of the game.
-/// </summary>
-[RequireComponent (typeof (LevelGUI))]
+              /// </summary>
 public class GameMaster : MonoBehaviour {
 
 	#region Variables
 	private static GameMaster instance;
-	private LevelGUI levelGUI;
 	public int numbrerOfPlayers = 5;//solo esta publico para probar temporalmente.
 	#endregion
 
@@ -31,7 +29,7 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	void Start(){
-		levelGUI.State = EState.Playing;
+		LevelGUI.Instance.State = EState.Playing;
 	}
 
 	// Use this for initialization
@@ -41,7 +39,6 @@ public class GameMaster : MonoBehaviour {
 			Destroy (this);
 		}else{
 			instance = this;
-			levelGUI = GetComponent<LevelGUI>();
 		}
 	}
 
@@ -52,6 +49,6 @@ public class GameMaster : MonoBehaviour {
 	public void PlayerReachedExit (GameObject human, GameObject exit)
 	{
 		//TODO: End of game logic.
-		levelGUI.State = EState.Ended;
+		LevelGUI.Instance.State = EState.Ended;
 	}
 }
