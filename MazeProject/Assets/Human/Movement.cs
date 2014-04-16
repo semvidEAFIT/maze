@@ -76,9 +76,11 @@ public class Movement : MonoBehaviour {
     /// </summary>
     private void Run() {
 		bool running = Input.GetAxis("Sprint") > 0;
+		bool walking = false;
         //TODO: Delete this line, this line is necessary because we don't have the animation yet.
         if ((Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0))
         {
+			walking = true;
 			if(stepTimer >= timeBetweenSteps){
 				PlayStep(running);
 				stepTimer = 0;
@@ -88,7 +90,7 @@ public class Movement : MonoBehaviour {
         //The user still has time to run.
         if (canRun)
         {
-            if (running)
+            if (walking && running)
             {
                 motor.movement.maxForwardSpeed = sprintSpeed;
 
