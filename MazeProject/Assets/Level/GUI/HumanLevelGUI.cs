@@ -49,7 +49,14 @@ public class HumanLevelGUI : LevelGUI
 		Rect timeArea = new Rect(Screen.width / 4f, 3f*Screen.height/5f, Screen.width/2f, Screen.height/10f);
 		GUI.Label(timeArea, "Time "+ formattedTime);
 	}
-	
+
+	public override void DrawHumanKilled(){
+		GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), blackScreen);
+		
+		Rect headerArea = new Rect(Screen.width / 6f, Screen.height / 5f, 2f*Screen.width / 3f, Screen.height / 5f);
+		GUI.Label(headerArea, "You're trapped\n forever.", GUI.skin.GetStyle("Header"));
+	}
+
 	public override void SetEndOfGame() {
 		endTime = Time.timeSinceLevelLoad;
 		formattedTime = FormatNumber((int)endTime/60) + ":" + FormatNumber((int)endTime%60);

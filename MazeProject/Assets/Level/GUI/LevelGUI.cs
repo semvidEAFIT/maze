@@ -52,11 +52,12 @@ public abstract class LevelGUI : MonoBehaviour
         else 
         {
             instance = this;
-            setup = new Action[] {null, SetEndOfGame};
+            setup = new Action[] {null, SetEndOfGame, null};
 
 			stateActions = new Action[Enum.GetNames(typeof(EState)).Length];
 			stateActions[(int)EState.Playing] = DrawPlaying;
 			stateActions[(int) EState.Ended] = DrawEndOfGame;
+			stateActions[(int)EState.HumanKilled] = DrawHumanKilled;
         }
 	}
     #endregion
@@ -73,6 +74,8 @@ public abstract class LevelGUI : MonoBehaviour
 
     #region EndOfGame
 	public abstract void DrawEndOfGame();
+
+	public abstract void DrawHumanKilled();
 
 	public abstract void SetEndOfGame();
 
