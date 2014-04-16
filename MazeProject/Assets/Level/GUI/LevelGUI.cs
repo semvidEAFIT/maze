@@ -21,6 +21,8 @@ public abstract class LevelGUI : MonoBehaviour
     /// </summary>
     private Action[] setup;
 
+	private Action[] stateActions;
+
     public EState State
     {
         get { return currentState; }
@@ -51,6 +53,10 @@ public abstract class LevelGUI : MonoBehaviour
         {
             instance = this;
             setup = new Action[] {null, SetEndOfGame};
+
+			stateActions = new Action[Enum.GetNames(typeof(EState)).Length];
+			stateActions[(int)EState.Playing] = DrawPlaying;
+			stateActions[(int) EState.Ended] = DrawEndOfGame;
         }
 	}
     #endregion
@@ -60,17 +66,7 @@ public abstract class LevelGUI : MonoBehaviour
     /// </summary>
     public virtual void OnGUI() {
         if (skin != null) GUI.skin = skin;
-        switch (currentState)
-        {
-            case EState.Playing:
-				DrawPlaying();
-                break;
-            case EState.Ended:
-                DrawEndOfGame();
-                break;
-            default:
-                break;
-        }
+		stateActions[(int)currentState]();
     }
 
 	public abstract void DrawPlaying ();
