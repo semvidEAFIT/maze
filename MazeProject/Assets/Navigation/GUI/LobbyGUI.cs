@@ -35,25 +35,7 @@ public class LobbyGUI : MonoBehaviour
 		}
 	}
 
-	public string[] connectedPLayersNames;  //public for testing TODO: delete once connection logic is ready
-	public string[] ConnectedPLayersNames {
-		get {
-			return connectedPLayersNames;
-		}
-		set {
-			connectedPLayersNames = value;
-		}
-	}
-
-	public bool[] playersRedy;
-	public bool[] PlayersRedy {
-		get {
-			return playersRedy;
-		}
-		set {
-			playersRedy = value;
-		}
-	}
+    private LobbyHandler handler;
     #endregion
 
     #region Singleton
@@ -76,6 +58,10 @@ public class LobbyGUI : MonoBehaviour
         }
 	}
     #endregion
+
+    void Start() {
+        handler = GameObject.Find("Networker").GetComponent<LobbyHandler>();
+    }
 
     /// <summary>
     /// Modifies the LobbyGUI according to the current game state
@@ -111,18 +97,18 @@ public class LobbyGUI : MonoBehaviour
 
 	private void DrawPlayers(int xSize, int ySize){
 		int labelsHeigh = 25;
-		for(int i = 0; i < connectedPLayersNames.Length; i++){
+		for(int i = 0; i < Networker.Instance.players.Count; i++){
 			GUI.BeginGroup(new Rect(0, i*(labelsHeigh+5), xSize, labelsHeigh));
-			GUI.Box(new Rect(0, 0, xSize, labelsHeigh), "  " + connectedPLayersNames[i]);
-			GUI.Toggle(new Rect(xSize-40, 0, 40, labelsHeigh), playersRedy[i], "");
+			GUI.Box(new Rect(0, 0, xSize, labelsHeigh), "  " + Networker.Instance.players[i]);
+            GUI.Toggle(new Rect(xSize - 40, 0, 40, labelsHeigh), handler.Ready[Networker.Instance.players[i]], "");
 			GUI.EndGroup();
 		}
 	}
 
 	private void DrawReady(int xSize, int ySize){
 		if(GUI.Button(new Rect(0,0,xSize,ySize), "Ready")){
-			playersRedy[0] = !playersRedy[0];
+            handler.Ready[Networker.Instance.UserName] = !handler.Ready[Networker.Instance.UserName];
 		}
-		GUI.Toggle(new Rect(3*xSize/4, (ySize/2) - 10, 15, ySize), playersRedy[0], "");
+        GUI.Toggle(new Rect(3 * xSize / 4, (ySize / 2) - 10, 15, ySize), handler.Ready[Networker.Instance.UserName], "");
 	}
 }

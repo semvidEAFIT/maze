@@ -6,6 +6,11 @@ public class LobbyHandler : MonoBehaviour {
 
     private Dictionary<string, bool> ready;
 
+    public Dictionary<string, bool> Ready
+    {
+        get { return ready; }
+    }
+
     void Awake() {
         ready = new Dictionary<string, bool>(Networker.MAXPLAYERS);
     }
@@ -16,7 +21,7 @@ public class LobbyHandler : MonoBehaviour {
 
     [RPC]
     public void JoinedMatch(string userName) {
-        ready.Add(userName, false);
+        Ready.Add(userName, false);
         Networker.Instance.players.Add(userName);
         Debug.Log(userName + " has joined the match.");
     }
@@ -32,7 +37,7 @@ public class LobbyHandler : MonoBehaviour {
     [RPC]
     public void UpdateReady(JSONObject isReady)
     {
-        ready[isReady.GetString("userName")] = isReady.GetBoolean("isReady");
+        Ready[isReady.GetString("userName")] = isReady.GetBoolean("isReady");
     }
 
     public void StartMatch() {

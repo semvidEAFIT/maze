@@ -18,12 +18,14 @@ public class ServerListGUI : MonoBehaviour {
         if(GUILayout.Button("Create Server")){
             Debug.Log(Network.player.ipAddress);
             Networker.Instance.CreateServer();
+            Networker.Instance.UserName = name;
             Application.LoadLevel("Lobby");
         }
 
         GUILayout.BeginVertical();
         if (GUILayout.Button("Join")) {
             Networker.Instance.JoinMatch(ip);
+            Networker.Instance.UserName = name;
             Application.LoadLevel("Lobby");
         }
 

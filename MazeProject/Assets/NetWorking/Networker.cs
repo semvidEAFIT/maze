@@ -15,6 +15,12 @@ public class Networker : MonoBehaviour {
     private static Networker instance;
 
     public List<string> players;
+    private string userName;
+    public string UserName
+    {
+        get { return userName; }
+        set { userName = value; }
+    }
 
     public static Networker Instance
     {
