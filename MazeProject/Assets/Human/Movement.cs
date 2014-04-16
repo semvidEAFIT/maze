@@ -10,6 +10,7 @@ public class Movement : MonoBehaviour {
 	/// The step sound to be played. Must be loopeable.
 	/// </summary>
 	public AudioClip[] stepSounds;
+	public AudioClip[] runningStepSounds;
 
 	/// <summary>
 	/// The time the human can run in seconds.
@@ -71,11 +72,12 @@ public class Movement : MonoBehaviour {
     /// running again.
     /// </summary>
     private void Run() {
+		bool running = Input.GetAxis("Sprint") > 0;
         //TODO: Delete this line, this line is necessary because we don't have the animation yet.
         if ((Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0))
         {
 			if(stepTimer >= timeBetweenSteps){
-				PlayStep();
+				PlayStep(running);
 				stepTimer = 0;
 			} 
         }
@@ -84,7 +86,7 @@ public class Movement : MonoBehaviour {
         //The user still has time to run.
         if (canRun)
         {
-            if (Input.GetAxis("Sprint") > 0)
+            if (running)
             {
                 motor.movement.maxForwardSpeed = sprintSpeed;
 
@@ -129,8 +131,13 @@ public class Movement : MonoBehaviour {
     /// <summary>
     /// Plays the step sound, intended to be used with the Animation.
     /// </summary>
-	public void PlayStep(){
-		audio.PlayOneShot(stepSounds[(int) (Random.value * stepSounds.Length-1)]);
+	public void PlayStep(bool running){
+		if(!running){
+			audio.PlayOneShot(stepSounds[(int) (Random.value * stepSounds.Length-1)]);
+		}
+		else{
+			audio.PlayOneShot(runningStepSounds[(int) (Random.value * stepSounds.Length-1)]);
+		}
 	}
 
     private void Play() {
