@@ -4,12 +4,12 @@ using System.Collections;
 /// <summary>
 /// In charge of managing all control events and other situations that
 /// changes the state of the game.
-/// </summary>
-[RequireComponent (typeof (LevelGUI))]
+              /// </summary>
 public class GameMaster : MonoBehaviour {
 
 	#region Variables
 	private static GameMaster instance;
+
 	private LevelGUI levelGUI;
     private int numberOfPlayers;
     public GameObject mazeGenerator;
@@ -30,13 +30,14 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	void Start(){
-		levelGUI.State = EState.Playing;
         numberOfPlayers = Networker.Instance.players.Count;
         if(Network.isServer){
             Instantiate(mazeGenerator);
         }
         //TODO: Spawn players in different positions and different prefabs
         Maze.Instance.InstantiateObject(human, Maze.Instance.startingX, Maze.Instance.startingY);
+		LevelGUI.Instance.State = EState.Playing;
+
 	}
 
 	// Use this for initialization
@@ -46,7 +47,6 @@ public class GameMaster : MonoBehaviour {
 			Destroy (this);
 		}else{
 			instance = this;
-			levelGUI = GetComponent<LevelGUI>();
 		}
 	}
 
@@ -57,6 +57,11 @@ public class GameMaster : MonoBehaviour {
 	public void PlayerReachedExit (GameObject human, GameObject exit)
 	{
 		//TODO: End of game logic.
-		levelGUI.State = EState.Ended;
+		LevelGUI.Instance.State = EState.Ended;
+	}
+
+	public void HumanWasKilled(){
+		//TODO: End of game logic.
+		LevelGUI.Instance.State = EState.HumanKilled;
 	}
 }

@@ -8,7 +8,11 @@ public class Human : MonoBehaviour {
 	/// </summary>
 	public float sanity = 100f;
 
+	void Update(){
+	}
+
 	public void Die(){
 		sanity = 0f;
+		GameMaster.Instance.HumanWasKilled();
 	}
 }
