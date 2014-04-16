@@ -42,7 +42,11 @@ public class Movement : MonoBehaviour {
 	//the one in charge of the character movement
 	private CharacterMotor motor;
 
+
+
     //TODO: Delete this variables that 
+	private float stepTimer;
+	public float timeBetweenSteps = 1;
 
 	void Start () {
 		if(stepSounds == null || stepSounds.Length==0){
@@ -53,6 +57,7 @@ public class Movement : MonoBehaviour {
 		defaultSpeed = motor.movement.maxForwardSpeed;
 		canRun = true;
 		timeRested = 0;
+		stepTimer = timeBetweenSteps;
 	}
 
 	void Update () {
@@ -67,10 +72,14 @@ public class Movement : MonoBehaviour {
     /// </summary>
     private void Run() {
         //TODO: Delete this line, this line is necessary because we don't have the animation yet.
-        if ((Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0) && !audio.isPlaying)
+        if ((Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0))
         {
-            Play();
+			if(stepTimer >= timeBetweenSteps){
+				PlayStep();
+				stepTimer = 0;
+			} 
         }
+		stepTimer+=Time.deltaTime;
 
         //The user still has time to run.
         if (canRun)
@@ -78,6 +87,9 @@ public class Movement : MonoBehaviour {
             if (Input.GetAxis("Sprint") > 0)
             {
                 motor.movement.maxForwardSpeed = sprintSpeed;
+
+				//double the stepTimer
+				stepTimer+=Time.deltaTime;
 
                 //Run time limit logic.
                 if (sprintTimeLeft <= 0)
