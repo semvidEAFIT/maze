@@ -20,7 +20,7 @@ public class MazeGenerator : MonoBehaviour {
 	/// <summary>
 	/// The exit prefab (of the maze).
 	/// </summary>
-	public GameObject exitGameObject;
+	public GameObject exitPrefab;
 	/// <summary>
 	/// The sound trigger chance of appearing (in %).
 	/// </summary>
@@ -52,9 +52,21 @@ public class MazeGenerator : MonoBehaviour {
 	private bool[,] mazeIsSoundTrigger;
 	private bool[,] mazeSoundTriggerVisited;
 
+
+	private GameObject[] exitsPlaced;
+	public GameObject[] ExitsPlaced {
+		get {
+			return exitsPlaced;
+		}
+		set {
+			exitsPlaced = value;
+		}
+	}
+
 	void Start () {
 		startingX--; //para no tener que poner la mitad menos uno en el editor
 		startingY--;
+		exitsPlaced = new GameObject[4];
 		maze = new string[width, height];
 		mazeIsSoundTrigger = new bool[width, height];
 		mazeSoundTriggerVisited = new bool[width,height];
@@ -401,7 +413,7 @@ public class MazeGenerator : MonoBehaviour {
 			case 1:
 				//la parte superior
 				positions[0] = (int)exit.x;
-				InstantiateObject(exitGameObject, (int)exit.x, (int)exit.y-1);
+				exitsPlaced[0] = InstantiateObject(exitPrefab, (int)exit.x, (int)exit.y-1);
 				if(exit.y != 0){
 					maze[(int) exit.x,(int) exit.y-1] = "s";
 				}
@@ -409,7 +421,7 @@ public class MazeGenerator : MonoBehaviour {
 			case 2:
 				//la parte derecha
 				positions[1] = (int)exit.y;
-				InstantiateObject(exitGameObject, (int)exit.x+1, (int)exit.y);
+				exitsPlaced[1] = InstantiateObject(exitPrefab, (int)exit.x+1, (int)exit.y);
 				if(exit.x != width-1){
 					maze[(int) exit.x+1,(int) exit.y] = "s";
 				}
@@ -417,7 +429,7 @@ public class MazeGenerator : MonoBehaviour {
 			case 3:
 				//la parte inferior
 				positions[2] = (int)exit.x;
-				InstantiateObject(exitGameObject, (int)exit.x, (int)exit.y+1);
+				exitsPlaced[2] = InstantiateObject(exitPrefab, (int)exit.x, (int)exit.y+1);
 				if(exit.y != height-1){
 					maze[(int) exit.x,(int) exit.y+1] = "s";
 				}
@@ -425,7 +437,7 @@ public class MazeGenerator : MonoBehaviour {
 			case 4:
 				//la parte izquierda
 				positions[3] = (int)exit.y;
-				InstantiateObject(exitGameObject, (int)exit.x-1, (int)exit.y);
+				exitsPlaced[3] = InstantiateObject(exitPrefab, (int)exit.x-1, (int)exit.y);
 				if(exit.x != 0){
 					maze[(int) exit.x-1,(int) exit.y] = "s";
 				}
