@@ -7,14 +7,14 @@ public class Human : MonoBehaviour {
 	/// The available amount of sanity.
 	/// </summary>
 	public float sanity = 100f;
-	private bool dead = false;
-
-	void Update(){
-		if(sanity == 0 && !dead){
-			dead = true;
-			Die();
-		}
-	}
+//	private bool dead = false;
+//
+//	void Update(){
+//		if(sanity == 0 && !dead){
+//			dead = true;
+//			Die();
+//		}
+//	}
 
 	public void Die(){
 		sanity = 0f;
