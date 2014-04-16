@@ -15,28 +15,34 @@ public class Human : MonoBehaviour {
 	/// </summary>
 	public float sprintTime = 7;
 
+	/// <summary>
+	/// The time needed to recover between sprints.
+	/// </summary>
+	public float restTime = 10;
+
+	/// <summary>
+	/// The sprint speed.
+	/// </summary>
+	public float sprintSpeed = 10;
+	
+	/// <summary>
+	/// The regen rate.
+	/// </summary>
+	public float regenRate = 1.5f;
+
+	/// <summary>
+	/// The available amount of sanity.
+	/// </summary>
+	public float sanity = 100f;
+
 	private float sprintTimeLeft;
 
 	private float defaultSpeed;
 
 	private bool canRun;
 
-	/// <summary>
-	/// The time needed to recover between sprints.
-	/// </summary>
-	public float restTime = 10;
-
 	private float timeRested;
 
-	/// <summary>
-	/// The sprint speed.
-	/// </summary>
-	public float sprintSpeed = 10;
-
-	/// <summary>
-	/// The regen rate.
-	/// </summary>
-	public float regenRate = 1.5f;
 
 	//the one in charge of the character movement
 	private CharacterMotor motor;
@@ -115,6 +121,10 @@ public class Human : MonoBehaviour {
 //
 
 		//Debug.Log(sprintTimeLeft);
+	}
+
+	public void Die(){
+		sanity = 0f;
 	}
 
 	public void PlayStep(){
