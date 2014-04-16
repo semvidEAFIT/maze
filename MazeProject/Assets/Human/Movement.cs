@@ -10,11 +10,31 @@ public class Movement : MonoBehaviour {
 	/// The step sound to be played. Must be loopeable.
 	/// </summary>
 	public AudioClip[] stepSounds;
+	public AudioClip[] runningStepSounds;
 
 	/// <summary>
 	/// The time the human can run in seconds.
 	/// </summary>
 	public float sprintTime = 7;
+	
+	/// <summary>
+	/// The sprint speed.
+	/// </summary>
+	public float sprintSpeed = 10;
+	
+	/// <summary>
+	/// The regen rate.
+	/// </summary>
+	public float regenRate = 1.5f;
+
+	/// <summary>
+	/// The time needed to recover between sprints.
+	/// </summary>
+	public float restTime = 10;
+
+	public float maximumFieldOfView;
+
+	private float initialFieldOfView, currentFieldOfView;
 
 	private float sprintTimeLeft;
 
@@ -22,33 +42,17 @@ public class Movement : MonoBehaviour {
 
 	private bool canRun;
 
-	/// <summary>
-	/// The time needed to recover between sprints.
-	/// </summary>
-	public float restTime = 10;
-
 	private float timeRested;
-
-	/// <summary>
-	/// The sprint speed.
-	/// </summary>
-	public float sprintSpeed = 10;
-
-	/// <summary>
-	/// The regen rate.
-	/// </summary>
-	public float regenRate = 1.5f;
 
 	//the one in charge of the character movement
 	private CharacterMotor motor;
-
-
 
     //TODO: Delete this variables that 
 	private float stepTimer;
 	public float timeBetweenSteps = 1;
 
 	void Start () {
+		initialFieldOfView = currentFieldOfView = Camera.main.fieldOfView;
 		if(stepSounds == null || stepSounds.Length==0){
 			Debug.LogError("StepSoundPlayer: step sound not asigned to object " + gameObject.name);
 		}
@@ -71,20 +75,20 @@ public class Movement : MonoBehaviour {
     /// running again.
     /// </summary>
     private void Run() {
+		bool running = Input.GetAxis("Sprint") > 0;
         //TODO: Delete this line, this line is necessary because we don't have the animation yet.
         if ((Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0))
         {
 			if(stepTimer >= timeBetweenSteps){
-				PlayStep();
+				PlayStep(running);
 				stepTimer = 0;
 			} 
         }
 		stepTimer+=Time.deltaTime;
-
         //The user still has time to run.
         if (canRun)
         {
-            if (Input.GetAxis("Sprint") > 0)
+            if (running)
             {
                 motor.movement.maxForwardSpeed = sprintSpeed;
 
@@ -100,7 +104,8 @@ public class Movement : MonoBehaviour {
                 else
                 {
                     sprintTimeLeft -= Time.deltaTime;
-                }
+				}
+				currentFieldOfView = Mathf.Lerp(currentFieldOfView, maximumFieldOfView, Time.deltaTime);
             }
             else
             {
@@ -109,7 +114,8 @@ public class Movement : MonoBehaviour {
                 if (sprintTimeLeft < sprintTime)
                 {
                     sprintTimeLeft += Time.deltaTime * regenRate;
-                }
+				}
+				currentFieldOfView = Mathf.Lerp(currentFieldOfView, initialFieldOfView, Time.deltaTime);
             }
         }
         else
@@ -122,15 +128,22 @@ public class Movement : MonoBehaviour {
                 canRun = true;
                 timeRested = 0;
                 sprintTimeLeft = sprintTime;
-            }
+			}
+			currentFieldOfView = Mathf.Lerp(currentFieldOfView, initialFieldOfView, Time.deltaTime);
         }
+		Camera.main.fieldOfView = currentFieldOfView;
     }
 
     /// <summary>
     /// Plays the step sound, intended to be used with the Animation.
     /// </summary>
-	public void PlayStep(){
-		audio.PlayOneShot(stepSounds[(int) (Random.value * stepSounds.Length-1)]);
+	public void PlayStep(bool running){
+		if(!running){
+			audio.PlayOneShot(stepSounds[(int) (Random.value * stepSounds.Length-1)]);
+		}
+		else{
+			audio.PlayOneShot(runningStepSounds[(int) (Random.value * stepSounds.Length-1)]);
+		}
 	}
 
     private void Play() {

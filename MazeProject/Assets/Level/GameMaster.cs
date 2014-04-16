@@ -51,4 +51,9 @@ public class GameMaster : MonoBehaviour {
 		//TODO: End of game logic.
 		LevelGUI.Instance.State = EState.Ended;
 	}
+
+	public void HumanWasKilled(){
+		//TODO: End of game logic.
+		LevelGUI.Instance.State = EState.HumanKilled;
+	}
 }
