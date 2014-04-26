@@ -22,6 +22,16 @@ public class Human : MonoBehaviour {
 		PlayDeath();
 	}
 
+	public bool CheckSeeingMonster (GameObject monster)
+	{
+		/**
+		 * si tiro raycast a la pos. del monstruo y lo estoy viendo (no hay nada de por medio)
+		 * entonces me quito cordura y devuelvo true.
+		 * si no, devuelvo false.
+		 */
+
+	}
+
 	private void PlayDeath(){
 		gameObject.transform.localScale *= 0.1f;
 		transform.Rotate(new Vector3(90f, 0f, 0f));
