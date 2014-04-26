@@ -45,13 +45,13 @@ public class LobbyGUI : MonoBehaviour
 		}
 	}
 
-	public bool[] playersRedy;
+	public bool[] playersReady;
 	public bool[] PlayersRedy {
 		get {
-			return playersRedy;
+			return playersReady;
 		}
 		set {
-			playersRedy = value;
+			playersReady = value;
 		}
 	}
     #endregion
@@ -121,16 +121,16 @@ public class LobbyGUI : MonoBehaviour
 		for(int i = 0; i < connectedPLayersNames.Length; i++){
 			GUI.BeginGroup(new Rect(0, i*(labelsHeigh+5), xSize, labelsHeigh));
 			GUI.Box(new Rect(0, 0, xSize, labelsHeigh), "  " + connectedPLayersNames[i]);
-			GUI.Toggle(new Rect(xSize-40, 0, 40, labelsHeigh), playersRedy[i], "");
+			GUI.Toggle(new Rect(xSize-40, 0, 40, labelsHeigh), playersReady[i], "");
 			GUI.EndGroup();
 		}
 	}
 
 	private void DrawReady(int xSize, int ySize){
 		if(GUI.Button(new Rect(0,0,xSize,ySize), "Ready")){
-			playersRedy[0] = !playersRedy[0];
+			playersReady[0] = !playersReady[0];
 		}
-		GUI.Toggle(new Rect(3*xSize/4, (ySize/2) - 10, 15, ySize), playersRedy[0], ""); //TODO: change values to the final texture
+		GUI.Toggle(new Rect(3*xSize/4, (ySize/2) - 10, 15, ySize), playersReady[0], ""); //TODO: change values to the final texture
 	}
 
 	private void DrawBack(int xSize, int ySize){
