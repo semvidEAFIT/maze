@@ -57,6 +57,7 @@ public class GameMaster : MonoBehaviour {
 	/// </summary>
 	void CheckVicinity ()
 	{
+		//TODO: Refactorizar freezing / unfreezing del monstruo para que sea compatible con el networking.
 		//Se sacan el script y la posicion del humano.
 		Vector2 humanPos = new Vector2(human.transform.position.x, human.transform.position.z);
 		Human humanScript = human.GetComponent<Human>();
@@ -71,7 +72,7 @@ public class GameMaster : MonoBehaviour {
 				//CheckSeeingMonster retorna verdadero si tiene vision directa del monstruo.
 				bool seeingMonster = humanScript.CheckSeeingMonster(monster);
 
-				if(seeingMonster){
+				if(seeingMonster && !monsterScript.Frozen){
 					monsterScript.Freeze();
 				}
 				else{

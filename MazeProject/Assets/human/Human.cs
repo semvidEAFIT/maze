@@ -7,6 +7,7 @@ public class Human : MonoBehaviour {
 	/// The available amount of sanity.
 	/// </summary>
 	public float sanity = 100f;
+	public float sanityLossQtyPerSec = 0.5f;
 //	private bool dead = false;
 //
 //	void Update(){
@@ -29,7 +30,13 @@ public class Human : MonoBehaviour {
 		 * entonces me quito cordura y devuelvo true.
 		 * si no, devuelvo false.
 		 */
-
+		if(monster.renderer.isVisible){
+			sanity -= sanityLossQtyPerSec * Time.deltaTime;
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	private void PlayDeath(){

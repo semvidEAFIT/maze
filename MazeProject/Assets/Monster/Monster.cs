@@ -22,11 +22,13 @@ public class Monster : MonoBehaviour {
 
 	public void Freeze ()
 	{
+		//TODO: Refactorizar freezing del monstruo para que sea compatible con el networking.
 		frozen = true;
 	}
 
 	public void Unfreeze ()
 	{
+		//TODO: Refactorizar unfreezing del monstruo para que sea compatible con el networking.
 		frozen = false;
 	}
 }
