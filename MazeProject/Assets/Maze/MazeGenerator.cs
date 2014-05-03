@@ -218,22 +218,31 @@ public class MazeGenerator : MonoBehaviour {
 	
 	void CreateBarriers (int[] exits)
 	{
+		System.Random r = new System.Random();
 		for(int i = 0; i < width; i++){
 			//up
 			if(i == exits[0] && exits[0] != -1){
 				GameObject b1 = InstantiateObject(wall, i, -2);
 				b1.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b1.renderer.material = wallMaterials[index];
 			} else {
 				GameObject b1 = InstantiateObject(wall, i, -1);
 				b1.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b1.renderer.material = wallMaterials[index];
 			}
 			//down
 			if(i == exits[2] && exits[2] != -1){
 				GameObject b2 = InstantiateObject(wall, i, height+1);
 				b2.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b2.renderer.material = wallMaterials[index];
 			} else {
 				GameObject b2 = InstantiateObject(wall, i, height);
 				b2.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b2.renderer.material = wallMaterials[index];
 			}
 		}
 		for(int i = 0; i < height; i++){
@@ -241,17 +250,25 @@ public class MazeGenerator : MonoBehaviour {
 			if(i == exits[1] && exits[1] != -1){
 				GameObject b1 = InstantiateObject(wall, width+1, i);
 				b1.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b1.renderer.material = wallMaterials[index];
 			} else {
 				GameObject b1 = InstantiateObject(wall, width, i);
 				b1.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b1.renderer.material = wallMaterials[index];
 			}
 			//left
 			if(i == exits[3] && exits[3] != -1){
 				GameObject b2 = InstantiateObject(wall, -2, i);
 				b2.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b2.renderer.material = wallMaterials[index];
 			} else {
 				GameObject b2 = InstantiateObject(wall, -1, i);
 				b2.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b2.renderer.material = wallMaterials[index];
 			}
 		}
 
