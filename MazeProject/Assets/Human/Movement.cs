@@ -44,6 +44,8 @@ public class Movement : MonoBehaviour {
 
 	private float timeRested;
 
+	private bool frozen;
+
 	//the one in charge of the character movement
 	private CharacterMotor motor;
 
@@ -62,10 +64,13 @@ public class Movement : MonoBehaviour {
 		canRun = true;
 		timeRested = 0;
 		stepTimer = timeBetweenSteps;
+		frozen = false;
 	}
 
 	void Update () {
-        Run();
+		if(!frozen){
+        	Run();
+		}
 	}
 
     /// <summary>
@@ -155,4 +160,17 @@ public class Movement : MonoBehaviour {
             audio.Play();
         }
     }
+
+
+	public void FreezeMovement(){
+		//desactiva el movimiento del mounstruo
+		motor.enabled = false;
+		frozen = true;
+	}
+
+	public void UnfreezeMovement(){
+		//vuelve a activar el movimiento
+		motor.enabled = true;
+		frozen = false;
+	}
 }

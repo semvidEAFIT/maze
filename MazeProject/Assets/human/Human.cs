@@ -30,13 +30,24 @@ public class Human : MonoBehaviour {
 		 * entonces me quito cordura y devuelvo true.
 		 * si no, devuelvo false.
 		 */
-		if(monster.renderer.isVisible){
-			sanity -= sanityLossQtyPerSec * Time.deltaTime;
-			return true;
+		Renderer monsterRenderer = (Renderer)monster.transform.GetComponentInChildren(typeof(Renderer));
+		if(monsterRenderer.isVisible){
+			Vector3 dir = monster.transform.position - this.transform.position;
+			RaycastHit hit;
+			if(Physics.Raycast(new Ray(this.transform.position, dir), out hit)){
+				if(hit.collider.CompareTag(ETag.Monster.ToString())){
+					sanity -= sanityLossQtyPerSec * Time.deltaTime;
+					Debug.Log(sanity);
+					if(sanity <= 0f){
+						PlayDeath();
+					}
+					return true;
+				}
+			}
 		}
-		else{
-			return false;
-		}
+
+		return false;
+
 	}
 
 	private void PlayDeath(){

@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Monster : MonoBehaviour {
 
+	private Movement moveScript;
+
 	private bool frozen;
 	public bool Frozen {
 		get{
@@ -12,7 +14,7 @@ public class Monster : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		moveScript = this.gameObject.GetComponent<Movement>();
 	}
 	
 	// Update is called once per frame
@@ -23,12 +25,20 @@ public class Monster : MonoBehaviour {
 	public void Freeze ()
 	{
 		//TODO: Refactorizar freezing del monstruo para que sea compatible con el networking.
+		//Detener el movimiento del mounstruo
+		moveScript.FreezeMovement();
+
+
 		frozen = true;
 	}
 
 	public void Unfreeze ()
 	{
 		//TODO: Refactorizar unfreezing del monstruo para que sea compatible con el networking.
+
+		//reanudar movimiento
+		moveScript.UnfreezeMovement();
+
 		frozen = false;
 	}
 }

@@ -71,9 +71,10 @@ public class GameMaster : MonoBehaviour {
 			if(Mathf.Sqrt(Vector2.SqrMagnitude(monsterPos - humanPos)) <= viewRadius){
 				//CheckSeeingMonster retorna verdadero si tiene vision directa del monstruo.
 				bool seeingMonster = humanScript.CheckSeeingMonster(monster);
-
-				if(seeingMonster && !monsterScript.Frozen){
-					monsterScript.Freeze();
+				if(seeingMonster){
+				   if(!monsterScript.Frozen){
+						monsterScript.Freeze();
+					}
 				}
 				else{
 					if(monsterScript.Frozen){
