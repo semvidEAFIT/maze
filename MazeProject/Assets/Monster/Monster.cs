@@ -28,6 +28,8 @@ public class Monster : MonoBehaviour {
 		//Detener el movimiento del mounstruo
 		moveScript.FreezeMovement();
 
+		//play the freeze sound
+
 
 		frozen = true;
 	}

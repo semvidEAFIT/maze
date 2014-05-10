@@ -50,7 +50,11 @@ public class Human : MonoBehaviour {
 	}
 
 	void Update(){
-		//TODO: disminuir sanity
+		if(sanity > 0){
+			sanity -= sanityLossQtyPerSec * Time.deltaTime;
+		} else {
+			Die();
+		}
 
 		if(timeToPlayNear>0){
 			timeToPlayNear -= Time.deltaTime;
