@@ -2,25 +2,77 @@
 using System.Collections;
 
 public class Human : MonoBehaviour {
-
+	#region variables
 	/// <summary>
 	/// The available amount of sanity.
 	/// </summary>
 	public float sanity = 100f;
+
+	/// <summary>
+	/// The sanity loss quantity per second.
+	/// </summary>
 	public float sanityLossQtyPerSec = 0.5f;
+
+	/// <summary>
+	/// The sounds for when the monster is near.
+	/// </summary>
+	public AudioClip[] monsterNear;
+
+	/// <summary>
+	/// The delay to play monster near sounds after
+	/// the human stopped seeing it.
+	/// </summary>
+	public float delayMonsterNear = 0.5f;
+
+
+	private float timeToPlayNear;
+
+	/// <summary>
+	/// The seeing monster.
+	/// </summary>
+	private bool seeingMonster;
+
+	private float timeToPlaySeeingMonster;
+
+	public float monsterSeenDelay = 20f;
+
+	public AudioClip[] seeingMonsterSound;
+
+	private bool playedMonsterSeenSound;
+
 //	private bool dead = false;
-//
-//	void Update(){
-//		if(sanity == 0 && !dead){
-//			dead = true;
-//			Die();
-//		}
-//	}
+	#endregion
+
+	void Start(){
+		timeToPlayNear = 0;
+		timeToPlaySeeingMonster = 0;
+		seeingMonster = false;
+	}
+
+	void Update(){
+		//TODO: disminuir sanity
+
+		if(timeToPlayNear>0){
+			timeToPlayNear -= Time.deltaTime;
+		}
+
+		if(timeToPlaySeeingMonster > 0){
+			if(!seeingMonster){
+				timeToPlaySeeingMonster -= Time.deltaTime;
+			}
+		} else if(seeingMonster) {
+			//play seeing monster
+			audio.PlayOneShot(seeingMonsterSound[Random.Range(0,seeingMonsterSound.Length)]);
+			timeToPlaySeeingMonster=monsterSeenDelay;
+		}
+	}
 
 	public void Die(){
 		sanity = 0f;
 		GameMaster.Instance.HumanWasKilled();
-		PlayDeath();
+		gameObject.transform.localScale *= 0.1f;
+		transform.Rotate(new Vector3(90f, 0f, 0f));
+		GetComponent<CharacterController>().radius *= 10f;
 	}
 
 	public bool CheckSeeingMonster (GameObject monster)
@@ -36,23 +88,39 @@ public class Human : MonoBehaviour {
 			RaycastHit hit;
 			if(Physics.Raycast(new Ray(this.transform.position, dir), out hit)){
 				if(hit.collider.CompareTag(ETag.Monster.ToString())){
+					if(!seeingMonster){
+						seeingMonster = true;
+					}
+
+
 					sanity -= sanityLossQtyPerSec * Time.deltaTime;
-					Debug.Log(sanity);
-					if(sanity <= 0f){
-						PlayDeath();
+					if(sanity <= 0){
+						Die();
 					}
 					return true;
 				}
 			}
 		}
 
-		return false;
+		//not seeing monster
+		if(seeingMonster){
+			seeingMonster = false;
+		}
 
+		return false;
 	}
 
-	private void PlayDeath(){
-		gameObject.transform.localScale *= 0.1f;
-		transform.Rotate(new Vector3(90f, 0f, 0f));
-		GetComponent<CharacterController>().radius *= 10f;
+	/// <summary>
+	/// Function called when the monster is near.
+	/// </summary>
+	public void MonsterNear(){
+		//reproducir sonido de mounstuo cercano.
+		if(timeToPlayNear <= 0){
+			AudioClip clip = monsterNear[Random.Range(0,monsterNear.Length)]; //escoje el clip
+			timeToPlayNear = clip.length+delayMonsterNear; //toma el tiempo que se demora el clip
+			audio.PlayOneShot(clip); //lo reproduce
+		}
+
+		
 	}
 }

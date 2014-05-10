@@ -69,6 +69,9 @@ public class GameMaster : MonoBehaviour {
 			Vector2 monsterPos = new Vector2(monster.transform.position.x, monster.transform.position.z);
 			//Se mira si el monstruo esta dentro del radio de vision.
 			if(Mathf.Sqrt(Vector2.SqrMagnitude(monsterPos - humanPos)) <= viewRadius){
+				//TODO:conectar con networker
+				humanScript.MonsterNear();
+
 				//CheckSeeingMonster retorna verdadero si tiene vision directa del monstruo.
 				bool seeingMonster = humanScript.CheckSeeingMonster(monster);
 				if(seeingMonster){
