@@ -107,7 +107,7 @@ public class LobbyGUI : MonoBehaviour
 
 	private void DrawReady(int xSize, int ySize){
 		if(GUI.Button(new Rect(0,0,xSize,ySize), "Ready")){
-            handler.Ready[Networker.Instance.UserName] = !handler.Ready[Networker.Instance.UserName];
+            handler.SetReady(!handler.Ready[Networker.Instance.UserName]);
 		}
         GUI.Toggle(new Rect(3 * xSize / 4, (ySize / 2) - 10, 15, ySize), handler.Ready[Networker.Instance.UserName], "");
 	}

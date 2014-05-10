@@ -35,7 +35,6 @@ public class ServerListGUI : MonoBehaviour {
 
     void OnConnectedToServer()
     {
-        Debug.Log("Llega");
         Networker.Instance.LoadLevel("Lobby");
     }
 

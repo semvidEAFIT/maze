@@ -4,7 +4,7 @@ using Boomlagoon.JSON;
 
 public class LobbyHandler : MonoBehaviour {
 
-    private Dictionary<string, bool> ready;
+    private volatile Dictionary<string, bool> ready;
 
     public Dictionary<string, bool> Ready
     {
@@ -17,14 +17,44 @@ public class LobbyHandler : MonoBehaviour {
 
     void Start() {
         ready.Add(Networker.Instance.UserName, false);
-        networkView.RPC("JoinedMatch", RPCMode.OthersBuffered, Networker.Instance.UserName);
+        if (Network.isClient) {
+            networkView.RPC("JoinedMatch", RPCMode.Server, Networker.Instance.UserName, Network.player);
+        }
+    }
+
+    [RPC] // Server
+    public void JoinedMatch(string userName, NetworkPlayer networkPlayer)
+    {
+        Networker.Instance.players.Add(userName);
+
+        JSONArray players = new JSONArray();
+        foreach (string playerName in ready.Keys)
+        {
+            JSONObject player = new JSONObject();
+            player.Add("userName", playerName);
+            player.Add("isReady", ready[playerName]);
+            players.Add(player);
+        }
+
+        networkView.RPC("InitializePlayers", networkPlayer, players.ToString());
+
+        ready.Add(userName, false);
+        
+        JSONObject newPlayer = new JSONObject();
+        newPlayer.Add("userName", userName);
+        newPlayer.Add("isReady", false);
+        networkView.RPC("UpdateReady", RPCMode.Others, newPlayer.ToString());
     }
 
     [RPC]
-    public void JoinedMatch(string userName) {
-        ready.Add(userName, false);
-        Networker.Instance.players.Add(userName);
-        Debug.Log(userName + " has joined the match.");
+    public void InitializePlayers(string jsonPlayers) {
+        JSONArray players = JSONArray.Parse(jsonPlayers);
+        for (int i = 0; i < players.Length; i++)
+        {
+            JSONObject player = players[i].Obj;
+            ready.Add(player.GetString("userName"), player.GetBoolean("isReady"));
+            Networker.Instance.players.Add(player.GetString("userName"));
+        }
     }
 
     public void SetReady(bool isReady)
@@ -33,13 +63,22 @@ public class LobbyHandler : MonoBehaviour {
         JSONObject json = new JSONObject();
         json.Add("userName", Networker.Instance.UserName);
         json.Add("isReady", isReady);
-        networkView.RPC("UpdateReady", RPCMode.OthersBuffered, json);
+        networkView.RPC("UpdateReady", RPCMode.Others, json.ToString());
     }
     
     [RPC]
-    public void UpdateReady(JSONObject isReady)
+    public void UpdateReady(string isReadyJSON)
     {
-        Ready[isReady.GetString("userName")] = isReady.GetBoolean("isReady");
+        JSONObject isReady = JSONObject.Parse(isReadyJSON);
+        if (ready.ContainsKey(isReady.GetString("userName")))
+        {
+            ready[isReady.GetString("userName")] = isReady.GetBoolean("isReady");
+        }
+        else 
+        {
+            Networker.Instance.players.Add(isReady.GetString("userName"));
+            ready.Add(isReady.GetString("userName"), isReady.GetBoolean("isReady"));
+        }
     }
 
     public void StartMatch() {

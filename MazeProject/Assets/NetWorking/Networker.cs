@@ -25,6 +25,13 @@ public class Networker : MonoBehaviour {
         }
     }
 
+    private List<NetworkPlayer> networkPlayers;
+
+    public List<NetworkPlayer> NetworkPlayers
+    {
+        get { return networkPlayers; }
+    }
+
     public static Networker Instance
     {
         get { return Networker.instance; }
@@ -52,6 +59,8 @@ public class Networker : MonoBehaviour {
             Debug.Log("Only one networker per client is allowed.");
             Destroy(gameObject);
         }
+
+        networkPlayers = new List<NetworkPlayer>(4);
     }
 
     public void JoinMatch(string ip) {
@@ -60,13 +69,11 @@ public class Networker : MonoBehaviour {
     }
 
     public void CreateServer() {
-        NetworkConnectionError error = Network.InitializeServer(MAXPLAYERS, PORT, false);
+        NetworkConnectionError error = Network.InitializeServer(MAXPLAYERS-1, PORT, false);
         if (error != NetworkConnectionError.NoError) throw new Exception(error.ToString());
     }
 
     public void LoadLevel(string level) {
-        Network.SetSendingEnabled(0, false);
-        Network.isMessageQueueRunning = false;
         switch (level) { 
             case "Level":
                 DestroyImmediate(GetComponent<LobbyHandler>());
@@ -82,8 +89,8 @@ public class Networker : MonoBehaviour {
         Application.LoadLevel(level);
     }
 
-    void OnLevelLoaded(int levelID) {
-        Network.SetSendingEnabled(0, true);
-        Network.isMessageQueueRunning = true;
+    void OnPlayerConnected(NetworkPlayer player)
+    {
+        networkPlayers.Add(player);
     }
 }
