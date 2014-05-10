@@ -16,22 +16,24 @@ public class LobbyHandler : MonoBehaviour {
     }
 
     void Start() {
-        networkView.RPC("JoinedMatch", RPCMode.AllBuffered, "Player");
+        ready.Add(Networker.Instance.UserName, false);
+        networkView.RPC("JoinedMatch", RPCMode.OthersBuffered, Networker.Instance.UserName);
     }
 
     [RPC]
     public void JoinedMatch(string userName) {
-        Ready.Add(userName, false);
+        ready.Add(userName, false);
         Networker.Instance.players.Add(userName);
         Debug.Log(userName + " has joined the match.");
     }
 
-    public void SetReady(string userName, bool isReady)
+    public void SetReady(bool isReady)
     {
+        ready[Networker.Instance.UserName] = isReady;
         JSONObject json = new JSONObject();
-        json.Add("userName", userName);
+        json.Add("userName", Networker.Instance.UserName);
         json.Add("isReady", isReady);
-        networkView.RPC("UpdateReady", RPCMode.AllBuffered, json);
+        networkView.RPC("UpdateReady", RPCMode.OthersBuffered, json);
     }
     
     [RPC]

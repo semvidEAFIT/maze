@@ -19,7 +19,10 @@ public class Networker : MonoBehaviour {
     public string UserName
     {
         get { return userName; }
-        set { userName = value; }
+        set { 
+            userName = value;
+            players.Add(userName);
+        }
     }
 
     public static Networker Instance
@@ -61,8 +64,10 @@ public class Networker : MonoBehaviour {
         if (error != NetworkConnectionError.NoError) throw new Exception(error.ToString());
     }
 
-    void OnLevelWasLoaded(int level) {
-        switch (Application.loadedLevelName) { 
+    public void LoadLevel(string level) {
+        Network.SetSendingEnabled(0, false);
+        Network.isMessageQueueRunning = false;
+        switch (level) { 
             case "Level":
                 DestroyImmediate(GetComponent<LobbyHandler>());
                 gameObject.AddComponent<LevelHandler>();
@@ -74,5 +79,11 @@ public class Networker : MonoBehaviour {
             default:
                 break;
         }
+        Application.LoadLevel(level);
+    }
+
+    void OnLevelLoaded(int levelID) {
+        Network.SetSendingEnabled(0, true);
+        Network.isMessageQueueRunning = true;
     }
 }
