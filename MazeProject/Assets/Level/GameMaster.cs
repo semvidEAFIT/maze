@@ -15,6 +15,9 @@ public class GameMaster : MonoBehaviour {
 	public GameObject human;
 	public float viewRadius;
 
+	public AudioClip introAmbience;
+	public AudioClip loopAmbience;
+
 	#endregion
 
 	public int NumbrerOfPlayers {
@@ -45,10 +48,18 @@ public class GameMaster : MonoBehaviour {
 		}else{
 			instance = this;
 		}
+
+		//play
+		audio.clip = introAmbience;
+		audio.Play();
+		audio.loop = false;
+		StartCoroutine(CheckForIntroEnd());
 	}
 
 	void Update(){
 		CheckVicinity();
+
+
 	}
 
 	/// <summary>
@@ -107,5 +118,19 @@ public class GameMaster : MonoBehaviour {
 	public void HumanWasKilled(){
 		//TODO: End of game logic.
 		LevelGUI.Instance.State = EState.HumanKilled;
+	}
+
+	private IEnumerator CheckForIntroEnd(){
+		//revisar si el sonido de intro termino.
+		for(;;){
+			if(!audio.isPlaying){
+				audio.clip = loopAmbience;
+				audio.loop = true;
+				audio.Play();
+				break;
+			}
+			yield return new WaitForSeconds(0);
+		}
+		//si si, poner el clip del audiosource como el loop ppal.
 	}
 }
