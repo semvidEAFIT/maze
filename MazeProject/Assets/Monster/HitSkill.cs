@@ -13,6 +13,8 @@ public class HitSkill : Skill {
 	/// </summary>
 	private bool killedHuman = false;
 
+	public AudioClip hitSound;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -24,7 +26,7 @@ public class HitSkill : Skill {
 	}
 
 	public override bool CheckInput(){
-		return Input.GetAxis("Attack") > 0;
+		return Input.GetMouseButtonDown(0);
 	}
 
 	/// <summary>
@@ -35,6 +37,7 @@ public class HitSkill : Skill {
 		RaycastHit hit;
 		if(Physics.SphereCast(ray, 1f, out hit, attackDistance)){
 			if(hit.collider.CompareTag(ETag.Human.ToString()) && !killedHuman){
+				audio.PlayOneShot(hitSound);
 				hit.collider.gameObject.GetComponent<Human>().Die();
 				killedHuman = true;
 			}
