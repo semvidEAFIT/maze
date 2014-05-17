@@ -49,17 +49,26 @@ public class GameMaster : MonoBehaviour {
 			instance = this;
 		}
 
-		//play
-		audio.clip = introAmbience;
-		audio.Play();
-		audio.loop = false;
-		StartCoroutine(CheckForIntroEnd());
+		//reproducir el intro de la musica del ambiente
+		playIntro();
 	}
 
 	void Update(){
 		CheckVicinity();
 
 
+	}
+
+	/// <summary>
+	/// play the intro of the ambience.
+	/// </summary>
+	private void playIntro(){
+		audio.clip = introAmbience;
+		audio.Play();
+		audio.loop = false;
+
+		//reproduze el loop del ambiente cuando termina el intro.
+		StartCoroutine(CheckForIntroEnd());
 	}
 
 	/// <summary>
@@ -120,9 +129,11 @@ public class GameMaster : MonoBehaviour {
 		LevelGUI.Instance.State = EState.HumanKilled;
 	}
 
+	//Revisa si el intro de ambiente termino y comienza a reproducir el loop de ambiente.s
 	private IEnumerator CheckForIntroEnd(){
 		//revisar si el sonido de intro termino.
 		for(;;){
+			//si si, poner el clip del audiosource como el loop ppal.
 			if(!audio.isPlaying){
 				audio.clip = loopAmbience;
 				audio.loop = true;
@@ -131,6 +142,6 @@ public class GameMaster : MonoBehaviour {
 			}
 			yield return new WaitForSeconds(0);
 		}
-		//si si, poner el clip del audiosource como el loop ppal.
+
 	}
 }
