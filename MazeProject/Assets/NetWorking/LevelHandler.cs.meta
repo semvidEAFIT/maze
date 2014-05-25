@@ -2,7 +2,10 @@ fileFormatVersion: 2
 guid: 2e49de2367d4c9744a4f2843bb2d2099
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - gameMasterPrefab: {fileID: 100000, guid: ae18622a8b3a5e344a54d3789c0cbb93, type: 2}
+  - humanPrefab: {fileID: 100002, guid: 2f251184eb3c242fb9c4fce1f05ccfbb, type: 2}
+  - monsterPrefab: {fileID: 100004, guid: 2cca42727e2372a48becfb4d9805f4aa, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -84,13 +84,20 @@ public class LobbyHandler : MonoBehaviour {
     public void StartMatch() {
         if (Network.isServer) { 
             // TODO: Call begin match in all players.
+			networkView.RPC("BeginMatch", RPCMode.Others);
+			Networker.Instance.LoadLevel("Level");
         }
     }
-
+	/// <summary>
+	/// Begins the match.
+	/// </summary>
+	/// <param name="isHuman">If set to <c>true</c> the player will be the human.</param>
     [RPC]
-    public void BeginMatch(JSONObject info)
+    public void BeginMatch()
     {
         //TODO: Load level and set player type and position
+		Debug.Log("lol");
+		Networker.Instance.LoadLevel("Level");
     }
 
 }

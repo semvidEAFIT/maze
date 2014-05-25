@@ -12,7 +12,6 @@ public class GameMaster : MonoBehaviour {
 
 	private LevelGUI levelGUI;
     private int numberOfPlayers;
-    public GameObject mazeGenerator;
     public GameObject human;
     public GameObject monster;
 	#endregion
@@ -31,12 +30,8 @@ public class GameMaster : MonoBehaviour {
 
 	void Start(){
         numberOfPlayers = Networker.Instance.players.Count;
-        if(Network.isServer){
-            Instantiate(mazeGenerator);
-        }
+		GameObject.Find("Networker").GetComponent<LevelHandler>().levelLoaded = true;
         //TODO: Spawn players in different positions and different prefabs
-        Maze.Instance.InstantiateObject(human, Maze.Instance.startingX, Maze.Instance.startingY);
-		LevelGUI.Instance.State = EState.Playing;
 
 	}
 

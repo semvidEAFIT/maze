@@ -6,6 +6,10 @@ using System;
 [RequireComponent (typeof(NetworkView))]
 public class Networker : MonoBehaviour {
 
+	public GameObject gameMasterPrefab;
+	public GameObject humanPrefab;
+	public GameObject monsterPrefab;
+
     private const int PORT = 7456;
     public const int MAXPLAYERS = 5;
 

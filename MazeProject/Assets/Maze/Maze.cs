@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class Maze : MonoBehaviour {
 
-	public GameObject human;
 	/// <summary>
 	/// The floor.
 	/// </summary>
@@ -59,8 +58,13 @@ public class Maze : MonoBehaviour {
         get { return Maze.instance; }
     }
 
+	void Awake(){ 
+		if (instance != null) Destroy(gameObject); // Don't create this maze.
+		instance = this;
+	}
+
 	void Start () {
-        if (instance != null) Destroy(gameObject); // Don't create this maze.
+       
 
 		startingX--; //para no tener que poner la mitad menos uno en el editor
 		startingY--;
@@ -98,12 +102,10 @@ public class Maze : MonoBehaviour {
 				} 
 			}
 		}
-		InstantiateObject(human, startingX, startingY);
 		PlaceSoundTriggers();
 		CreateBarriers(exitsPos);
 		PlaceFloor();
 
-        instance = this;
 	}
 
 	/// <summary>
@@ -268,7 +270,7 @@ public class Maze : MonoBehaviour {
 		Vector3 position = (scale/2f) - wall.renderer.bounds.size;
 		position.y = 0;
 
-		GameObject g = (GameObject)Instantiate(floor, position, Quaternion.identity);
+		GameObject g = (GameObject)Network.Instantiate(floor, position, Quaternion.identity,0);
 		g.transform.localScale = scale;
 
 	}
@@ -447,13 +449,13 @@ public class Maze : MonoBehaviour {
 	}
 
 	public GameObject InstantiateObject(GameObject obj, int i, int j){
-		GameObject go = (GameObject)Instantiate(
+		GameObject go = (GameObject)Network.Instantiate(
 			obj,
 			new Vector3(i * wall.renderer.bounds.size.x, 
 		            wall.renderer.bounds.size.y / 2, 
 		            j * wall.renderer.bounds.size.z), 
-			floor.transform.rotation
-			);
+					floor.transform.rotation,0
+					);
 		return go;
 	}
 }
