@@ -40,6 +40,12 @@ public class Human : MonoBehaviour {
 
 	private bool playedMonsterSeenSound;
 
+	/// <summary>
+	/// The sound played when the player dies.
+	/// </summary>
+	public AudioClip playerDead;
+	private bool playerIsDead;
+
 //	private bool dead = false;
 	#endregion
 
@@ -47,13 +53,16 @@ public class Human : MonoBehaviour {
 		timeToPlayNear = 0;
 		timeToPlaySeeingMonster = 0;
 		seeingMonster = false;
+		playerIsDead = false;
 	}
 
 	void Update(){
 		if(sanity > 0){
 			sanity -= sanityLossQtyPerSec * Time.deltaTime;
 		} else {
-			Die();
+			if(!playerIsDead){
+				Die();
+			}
 		}
 
 		if(timeToPlayNear>0){
@@ -77,6 +86,10 @@ public class Human : MonoBehaviour {
 		gameObject.transform.localScale *= 0.1f;
 		transform.Rotate(new Vector3(90f, 0f, 0f));
 		GetComponent<CharacterController>().radius *= 10f;
+
+		//play death sound.
+		audio.PlayOneShot(playerDead);
+		playerIsDead = true;
 	}
 
 	public bool CheckSeeingMonster (GameObject monster)
