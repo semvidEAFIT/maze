@@ -13,6 +13,10 @@ public class HitSkill : Skill {
 	/// </summary>
 	private bool killedHuman = false;
 
+	public AudioClip hitSound;
+
+	public AudioClip swipeSound;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -24,20 +28,40 @@ public class HitSkill : Skill {
 	}
 
 	public override bool CheckInput(){
-		return Input.GetAxis("Attack") > 0;
+		return Input.GetMouseButtonDown(0);
 	}
 
 	/// <summary>
 	/// Executes the skill. Shoots a spherecast and checks if it hit the player, if they are within te attackDistance.
 	/// </summary>
 	public override void Execute(){
+		audio.clip = swipeSound;
+		audio.Play();	
+
 		Ray ray = new Ray(transform.position, transform.forward);
 		RaycastHit hit;
 		if(Physics.SphereCast(ray, 1f, out hit, attackDistance)){
 			if(hit.collider.CompareTag(ETag.Human.ToString()) && !killedHuman){
+//				audio.PlayOneShot(hitSound);
+				StartCoroutine(CheckForSwipeEnd());
 				hit.collider.gameObject.GetComponent<Human>().Die();
 				killedHuman = true;
 			}
 		}
+	}
+
+	//revisa si el swipe termino de reproducir y reproduce el sonido de que mato el humano
+	private IEnumerator CheckForSwipeEnd(){
+		//revisar si el sonido de intro termino.
+		for(;;){
+			//si si, poner el clip del audiosource como el loop ppal.
+			if(!audio.isPlaying){
+				audio.clip = hitSound;
+				audio.Play();
+				break;
+			}
+			yield return new WaitForSeconds(0);
+		}
+		
 	}
 }

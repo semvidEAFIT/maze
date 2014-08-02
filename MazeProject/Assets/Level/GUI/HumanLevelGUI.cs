@@ -13,6 +13,7 @@ public class HumanLevelGUI : LevelGUI
 	/// </summary>
 	private float endTime;
 	private string formattedTime;
+	public Texture2D loseScreen;
 	#endregion
 	
 	#region Singleton

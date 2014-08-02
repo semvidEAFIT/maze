@@ -19,7 +19,7 @@ public class Maze : MonoBehaviour {
 	/// <summary>
 	/// The exit prefab (of the maze).
 	/// </summary>
-	public GameObject exitGameObject;
+	public GameObject exitPrefab;
 	/// <summary>
 	/// The sound trigger chance of appearing (in %).
 	/// </summary>
@@ -63,11 +63,23 @@ public class Maze : MonoBehaviour {
 		instance = this;
 	}
 
+
+	private GameObject[] exitsPlaced;
+	public GameObject[] ExitsPlaced {
+		get {
+			return exitsPlaced;
+		}
+		set {
+			exitsPlaced = value;
+		}
+	}
+
 	void Start () {
        
 
 		startingX--; //para no tener que poner la mitad menos uno en el editor
 		startingY--;
+		exitsPlaced = new GameObject[4];
 		maze = new string[width, height];
 		mazeIsSoundTrigger = new bool[width, height];
 		mazeSoundTriggerVisited = new bool[width,height];
@@ -219,22 +231,31 @@ public class Maze : MonoBehaviour {
 	
 	void CreateBarriers (int[] exits)
 	{
+		System.Random r = new System.Random();
 		for(int i = 0; i < width; i++){
 			//up
 			if(i == exits[0] && exits[0] != -1){
 				GameObject b1 = InstantiateObject(wall, i, -2);
 				b1.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b1.renderer.material = wallMaterials[index];
 			} else {
 				GameObject b1 = InstantiateObject(wall, i, -1);
 				b1.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b1.renderer.material = wallMaterials[index];
 			}
 			//down
 			if(i == exits[2] && exits[2] != -1){
 				GameObject b2 = InstantiateObject(wall, i, height+1);
 				b2.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b2.renderer.material = wallMaterials[index];
 			} else {
 				GameObject b2 = InstantiateObject(wall, i, height);
 				b2.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b2.renderer.material = wallMaterials[index];
 			}
 		}
 		for(int i = 0; i < height; i++){
@@ -242,17 +263,25 @@ public class Maze : MonoBehaviour {
 			if(i == exits[1] && exits[1] != -1){
 				GameObject b1 = InstantiateObject(wall, width+1, i);
 				b1.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b1.renderer.material = wallMaterials[index];
 			} else {
 				GameObject b1 = InstantiateObject(wall, width, i);
 				b1.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b1.renderer.material = wallMaterials[index];
 			}
 			//left
 			if(i == exits[3] && exits[3] != -1){
 				GameObject b2 = InstantiateObject(wall, -2, i);
 				b2.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b2.renderer.material = wallMaterials[index];
 			} else {
 				GameObject b2 = InstantiateObject(wall, -1, i);
 				b2.transform.parent = this.transform;
+				int index = r.Next(wallMaterials.Length);
+				b2.renderer.material = wallMaterials[index];
 			}
 		}
 
@@ -414,7 +443,7 @@ public class Maze : MonoBehaviour {
 			case 1:
 				//la parte superior
 				positions[0] = (int)exit.x;
-				InstantiateObject(exitGameObject, (int)exit.x, (int)exit.y-1);
+				exitsPlaced[0] = InstantiateObject(exitPrefab, (int)exit.x, (int)exit.y-1);
 				if(exit.y != 0){
 					maze[(int) exit.x,(int) exit.y-1] = "s";
 				}
@@ -422,7 +451,7 @@ public class Maze : MonoBehaviour {
 			case 2:
 				//la parte derecha
 				positions[1] = (int)exit.y;
-				InstantiateObject(exitGameObject, (int)exit.x+1, (int)exit.y);
+				exitsPlaced[1] = InstantiateObject(exitPrefab, (int)exit.x+1, (int)exit.y);
 				if(exit.x != width-1){
 					maze[(int) exit.x+1,(int) exit.y] = "s";
 				}
@@ -430,7 +459,7 @@ public class Maze : MonoBehaviour {
 			case 3:
 				//la parte inferior
 				positions[2] = (int)exit.x;
-				InstantiateObject(exitGameObject, (int)exit.x, (int)exit.y+1);
+				exitsPlaced[2] = InstantiateObject(exitPrefab, (int)exit.x, (int)exit.y+1);
 				if(exit.y != height-1){
 					maze[(int) exit.x,(int) exit.y+1] = "s";
 				}
@@ -438,7 +467,7 @@ public class Maze : MonoBehaviour {
 			case 4:
 				//la parte izquierda
 				positions[3] = (int)exit.y;
-				InstantiateObject(exitGameObject, (int)exit.x-1, (int)exit.y);
+				exitsPlaced[3] = InstantiateObject(exitPrefab, (int)exit.x-1, (int)exit.y);
 				if(exit.x != 0){
 					maze[(int) exit.x-1,(int) exit.y] = "s";
 				}

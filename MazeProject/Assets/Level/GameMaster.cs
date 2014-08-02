@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// In charge of managing all control events and other situations that
@@ -14,6 +15,12 @@ public class GameMaster : MonoBehaviour {
     private int numberOfPlayers;
     public GameObject human;
     public GameObject monster;
+	public List<GameObject> monsters;
+	public float viewRadius;
+
+	public AudioClip introAmbience;
+	public AudioClip loopAmbience;
+
 	#endregion
 
 	public int NumberOfPlayers {
@@ -43,6 +50,70 @@ public class GameMaster : MonoBehaviour {
 		}else{
 			instance = this;
 		}
+
+		//reproducir el intro de la musica del ambiente
+		playIntro();
+	}
+
+	void Update(){
+		CheckVicinity();
+
+
+	}
+
+	/// <summary>
+	/// play the intro of the ambience.
+	/// </summary>
+	private void playIntro(){
+		audio.clip = introAmbience;
+		audio.Play();
+		audio.loop = false;
+
+		//reproduze el loop del ambiente cuando termina el intro.
+		StartCoroutine(CheckForIntroEnd());
+	}
+
+	/// <summary>
+	/// Checks the human's vicinity to monsters, 
+	/// to freeze / unfreeze monsters if necessary (if the player is seeing them).
+	/// </summary>
+	void CheckVicinity ()
+	{
+		//TODO: Refactorizar freezing / unfreezing del monstruo para que sea compatible con el networking.
+		//Se sacan el script y la posicion del humano.
+		Vector2 humanPos = new Vector2(human.transform.position.x, human.transform.position.z);
+		Human humanScript = human.GetComponent<Human>();
+		//Se comparara la posicion del humano con la de cada monstruo 
+		//para ver cual esta dentro del radio de vision.
+		foreach(GameObject monster in monsters){
+			//Se sacan el script y la pos. del monstruo actual.
+			Monster monsterScript = monster.GetComponent<Monster>();
+			Vector2 monsterPos = new Vector2(monster.transform.position.x, monster.transform.position.z);
+			//Se mira si el monstruo esta dentro del radio de vision.
+			if(Mathf.Sqrt(Vector2.SqrMagnitude(monsterPos - humanPos)) <= viewRadius){
+				//TODO:conectar con networker
+				humanScript.MonsterNear();
+
+				//CheckSeeingMonster retorna verdadero si tiene vision directa del monstruo.
+				bool seeingMonster = humanScript.CheckSeeingMonster(monster);
+				if(seeingMonster){
+				   if(!monsterScript.Frozen){
+						monsterScript.Freeze();
+					}
+				}
+				else{
+					if(monsterScript.Frozen){
+						monsterScript.Unfreeze();
+					}
+				}
+			}
+			//Si no esta en el rango de vision, revisar si el monstruo esta congelado y descongelarlo.
+			else{
+				if(monsterScript.Frozen){
+					monsterScript.Unfreeze();
+				}
+			}
+		}
 	}
 
 	/// <summary>
@@ -58,5 +129,21 @@ public class GameMaster : MonoBehaviour {
 	public void HumanWasKilled(){
 		//TODO: End of game logic.
 		LevelGUI.Instance.State = EState.HumanKilled;
+	}
+
+	//Revisa si el intro de ambiente termino y comienza a reproducir el loop de ambiente.s
+	private IEnumerator CheckForIntroEnd(){
+		//revisar si el sonido de intro termino.
+		for(;;){
+			//si si, poner el clip del audiosource como el loop ppal.
+			if(!audio.isPlaying){
+				audio.clip = loopAmbience;
+				audio.loop = true;
+				audio.Play();
+				break;
+			}
+			yield return new WaitForSeconds(0);
+		}
+
 	}
 }

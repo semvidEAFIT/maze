@@ -2,7 +2,11 @@ fileFormatVersion: 2
 guid: cf244d4c3cc3d0c4285001c0969a9102
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - floor: {fileID: 100000, guid: 6724e80e247b9294aa70cb714ead2151, type: 2}
+  - wall: {instanceID: 0}
+  - soundTrigger: {instanceID: 0}
+  - exitPrefab: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
