@@ -59,7 +59,7 @@ public class Maze : MonoBehaviour {
     }
 
 	void Awake(){ 
-		if (instance != null) Destroy(gameObject); // Don't create this maze.
+		if (instance != null || !Network.isServer) Destroy(gameObject); // Don't create this maze.
 		instance = this;
 	}
 
@@ -265,6 +265,7 @@ public class Maze : MonoBehaviour {
 				b1.transform.parent = this.transform;
 				int index = r.Next(wallMaterials.Length);
 				b1.renderer.material = wallMaterials[index];
+				Debug.Log( b1.networkView.stateSynchronization);
 			} else {
 				GameObject b1 = InstantiateObject(wall, width, i);
 				b1.transform.parent = this.transform;
@@ -298,9 +299,9 @@ public class Maze : MonoBehaviour {
 		                            height * wall.renderer.bounds.size.z+10);
 		Vector3 position = (scale/2f) - wall.renderer.bounds.size;
 		position.y = 0;
-
+		floor.transform.localScale = scale;
 		GameObject g = (GameObject)Network.Instantiate(floor, position, Quaternion.identity,0);
-		g.transform.localScale = scale;
+		//g.transform.localScale = scale;
 
 	}
 
