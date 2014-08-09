@@ -15,6 +15,7 @@ public class Monster : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		moveScript = this.gameObject.GetComponent<Movement>();
+		Camera.SetupCurrent(camera);
 	}
 	
 	// Update is called once per frame

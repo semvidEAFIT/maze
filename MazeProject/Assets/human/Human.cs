@@ -54,6 +54,7 @@ public class Human : MonoBehaviour {
 		timeToPlaySeeingMonster = 0;
 		seeingMonster = false;
 		playerIsDead = false;
+		Camera.SetupCurrent(camera);
 	}
 
 	void Update(){
