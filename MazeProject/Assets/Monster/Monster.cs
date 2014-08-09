@@ -13,9 +13,9 @@ public class Monster : MonoBehaviour {
 	}
 	void Awake(){
 		if(networkView.isMine){
-			camera.enabled = true;
+			transform.GetComponentInChildren<camera>().enabled = true;
 		}else{
-			camera.enabled = false;
+			transform.GetComponentInChildren<camera>().enabled = false;
 		}
 	}
 	// Use this for initialization
