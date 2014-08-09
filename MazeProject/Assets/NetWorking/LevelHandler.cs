@@ -58,8 +58,9 @@ public class LevelHandler : MonoBehaviour {
 	{
 		playersReady++;
 		if(playersReady == Networker.Instance.players.Count){// si todos listos
+
 			isReady = true;
-			int r = Random.Range(0,Networker.Instance.players.Count);//quien es el humano
+			int r = Random.Range(0,Networker.Instance.players.Count-1);//quien es el humano
 			SetRole(r==0);
 			r--;
 			for(int i = 0; i < Networker.Instance.NetworkPlayers.Count; i++){
@@ -69,6 +70,8 @@ public class LevelHandler : MonoBehaviour {
 					networkView.RPC("SetRole", Networker.Instance.NetworkPlayers[i], false);
 				}
 			}
+			
+			LevelGUI.Instance.State = EState.Playing;
 		}
 	}
 	/// <summary>
@@ -78,12 +81,13 @@ public class LevelHandler : MonoBehaviour {
 	[RPC]
 	public void SetRole(bool isHuman){
 		if(isHuman){
-			Maze.Instance.InstantiateObject(Networker.Instance.humanPrefab, Maze.Instance.startingX, Maze.Instance.startingY);
-//			Network.Instantiate(Networker.Instance.humanPrefab, Vector3.zero, Quaternion.identity,0);
-			LevelGUI.Instance.State = EState.Playing;
+			//Maze.Instance.InstantiateObject(Networker.Instance.humanPrefab, Maze.Instance.startingX, Maze.Instance.startingY);
+			Network.Instantiate(Networker.Instance.humanPrefab, Maze.Instance.GetMazePosition(Maze.Instance.startingX,Maze.Instance.startingX)
+			                    , Quaternion.identity,0);
 		}else{
-			Maze.Instance.InstantiateObject(Networker.Instance.monsterPrefab, Maze.Instance.startingX, Maze.Instance.startingY+1);
-//			Network.Instantiate(Networker.Instance.humanPrefab, Vector3.zero, Quaternion.identity,0);
+			//Maze.Instance.InstantiateObject(Networker.Instance.monsterPrefab, Maze.Instance.startingX, Maze.Instance.startingY+1);
+			Network.Instantiate(Networker.Instance.monsterPrefab, Maze.Instance.GetMazePosition(Maze.Instance.startingX,Maze.Instance.startingX)
+			                    , Quaternion.identity,0);
 		}
 	}
 

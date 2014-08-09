@@ -309,30 +309,32 @@ private function UpdateFunction () {
 }
 
 function FixedUpdate () {
-	if (movingPlatform.enabled) {
-		if (movingPlatform.activePlatform != null) {
-			if (!movingPlatform.newPlatform) {
-				var lastVelocity : Vector3 = movingPlatform.platformVelocity;
-				
-				movingPlatform.platformVelocity = (
-					movingPlatform.activePlatform.localToWorldMatrix.MultiplyPoint3x4(movingPlatform.activeLocalPoint)
-					- movingPlatform.lastMatrix.MultiplyPoint3x4(movingPlatform.activeLocalPoint)
-				) / Time.deltaTime;
+	if(networkView.isMine){
+		if (movingPlatform.enabled) {
+			if (movingPlatform.activePlatform != null) {
+				if (!movingPlatform.newPlatform) {
+					var lastVelocity : Vector3 = movingPlatform.platformVelocity;
+					
+					movingPlatform.platformVelocity = (
+						movingPlatform.activePlatform.localToWorldMatrix.MultiplyPoint3x4(movingPlatform.activeLocalPoint)
+						- movingPlatform.lastMatrix.MultiplyPoint3x4(movingPlatform.activeLocalPoint)
+					) / Time.deltaTime;
+				}
+				movingPlatform.lastMatrix = movingPlatform.activePlatform.localToWorldMatrix;
+				movingPlatform.newPlatform = false;
 			}
-			movingPlatform.lastMatrix = movingPlatform.activePlatform.localToWorldMatrix;
-			movingPlatform.newPlatform = false;
+			else {
+				movingPlatform.platformVelocity = Vector3.zero;	
+			}
 		}
-		else {
-			movingPlatform.platformVelocity = Vector3.zero;	
-		}
+		
+		if (useFixedUpdate)
+			UpdateFunction();
 	}
-	
-	if (useFixedUpdate)
-		UpdateFunction();
 }
 
 function Update () {
-	if (!useFixedUpdate)
+	if (!useFixedUpdate&&networkView.isMine)
 		UpdateFunction();
 }
 

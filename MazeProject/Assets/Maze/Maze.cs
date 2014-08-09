@@ -488,4 +488,11 @@ public class Maze : MonoBehaviour {
 					);
 		return go;
 	}
+
+	public Vector3 GetMazePosition(int i, int j){
+		return new Vector3(i * wall.renderer.bounds.size.x, 
+		                   wall.renderer.bounds.size.y / 2, 
+		                   j * wall.renderer.bounds.size.z);
+	}
+
 }
