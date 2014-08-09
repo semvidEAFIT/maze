@@ -49,12 +49,19 @@ public class Human : MonoBehaviour {
 //	private bool dead = false;
 	#endregion
 
+	void Awake(){
+		if(networkView.isMine){
+			camera.enabled = true;
+		}else{
+			camera.enabled = false;
+		}
+	}
+
 	void Start(){
 		timeToPlayNear = 0;
 		timeToPlaySeeingMonster = 0;
 		seeingMonster = false;
 		playerIsDead = false;
-		Camera.SetupCurrent(camera);
 	}
 
 	void Update(){
