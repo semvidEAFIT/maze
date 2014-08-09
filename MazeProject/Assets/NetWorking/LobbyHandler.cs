@@ -36,7 +36,10 @@ public class LobbyHandler : MonoBehaviour {
             players.Add(player);
         }
 
-        networkView.RPC("InitializePlayers", networkPlayer, players.ToString());
+		networkView.RPC("InitializePlayers", networkPlayer, players.ToString());
+		networkView.RPC("AddNetworkView", RPCMode.Others, Network.player);
+		networkView.RPC("AddNetworkView", RPCMode.Others, networkPlayer);
+		Networker.Instance.NetworkPlayers.Add(networkPlayer);
 
         ready.Add(userName, false);
         
@@ -57,6 +60,10 @@ public class LobbyHandler : MonoBehaviour {
         }
     }
 
+	[RPC]
+	public void AddNetworkView(NetworkPlayer networkPlayer){
+		Networker.Instance.NetworkPlayers.Add(networkPlayer);
+	}
     public void SetReady(bool isReady)
     {
         ready[Networker.Instance.UserName] = isReady;
