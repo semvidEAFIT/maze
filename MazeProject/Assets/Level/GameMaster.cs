@@ -14,6 +14,7 @@ public class GameMaster : MonoBehaviour {
 	private LevelGUI levelGUI;
     private int numberOfPlayers;
     public GameObject human;
+	public NetworkPlayer npHuman;
     public GameObject monster;
 	public List<GameObject> monsters;
 	public float viewRadius;
@@ -57,8 +58,6 @@ public class GameMaster : MonoBehaviour {
 
 	void Update(){
 		CheckVicinity();
-
-
 	}
 
 	/// <summary>
@@ -92,7 +91,8 @@ public class GameMaster : MonoBehaviour {
 			//Se mira si el monstruo esta dentro del radio de vision.
 			if(Mathf.Sqrt(Vector2.SqrMagnitude(monsterPos - humanPos)) <= viewRadius){
 				//TODO:conectar con networker
-				humanScript.MonsterNear();
+				networkView.RPC("MonsterNear",npHuman,null);
+				//humanScript.MonsterNear();
 
 				//CheckSeeingMonster retorna verdadero si tiene vision directa del monstruo.
 				bool seeingMonster = humanScript.CheckSeeingMonster(monster);

@@ -107,6 +107,7 @@ public class Human : MonoBehaviour {
 		 * entonces me quito cordura y devuelvo true.
 		 * si no, devuelvo false.
 		 */
+		Debug.Log("Checking");
 		Renderer monsterRenderer = (Renderer)monster.transform.GetComponentInChildren(typeof(Renderer));
 		if(monsterRenderer.isVisible){
 			Vector3 dir = monster.transform.position - this.transform.position;
@@ -138,14 +139,20 @@ public class Human : MonoBehaviour {
 	/// <summary>
 	/// Function called when the monster is near.
 	/// </summary>
+	[RPC]
 	public void MonsterNear(){
-		//reproducir sonido de mounstuo cercano.
+		Debug.Log("Near");
+		          //reproducir sonido de mounstuo cercano.
 		if(timeToPlayNear <= 0){
 			AudioClip clip = monsterNear[Random.Range(0,monsterNear.Length)]; //escoje el clip
 			timeToPlayNear = clip.length+delayMonsterNear; //toma el tiempo que se demora el clip
 			audio.PlayOneShot(clip); //lo reproduce
 		}
+	}
 
-		
+	void OnGUI(){
+		if(networkView.isMine){
+			GUI.Label(new Rect(0,0,Screen.width*0.1f,Screen.height*0.05f),"Humano");
+		}
 	}
 }

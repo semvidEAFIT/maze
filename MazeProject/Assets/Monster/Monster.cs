@@ -49,4 +49,11 @@ public class Monster : MonoBehaviour {
 
 		frozen = false;
 	}
+
+	
+	void OnGUI(){
+		if(networkView.isMine){
+			GUI.Label(new Rect(0,0,Screen.width*0.1f,Screen.height*0.05f),"Monster");
+		}
+	}
 }
