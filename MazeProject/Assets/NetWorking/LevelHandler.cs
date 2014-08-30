@@ -68,13 +68,11 @@ public class LevelHandler : MonoBehaviour {
 			int r = Random.Range(0,Networker.Instance.players.Count-1);//quien es el humano
 			//SetRole(r==0);
 			if(r==0){
-				Networker.Instance.humanPrefab.name = Networker.Instance.UserName;
 				GameObject human = (GameObject)Network.Instantiate(Networker.Instance.humanPrefab, Maze.Instance.GetMazePosition(Maze.Instance.startingX,Maze.Instance.startingX)
 				                    , Quaternion.identity,0);
 				GameMaster.Instance.human = human;
 				GameMaster.Instance.npHuman = Network.player;
 			}else{
-				Networker.Instance.monsterPrefab.name = Networker.Instance.UserName;
 				Network.Instantiate(Networker.Instance.monsterPrefab, Maze.Instance.GetMazePosition(Maze.Instance.startingX,Maze.Instance.startingX)
 				                    , Quaternion.identity,0);
 			}
@@ -96,13 +94,11 @@ public class LevelHandler : MonoBehaviour {
 	[RPC]
 	public void SetRole(bool isHuman){
 		if(isHuman){
-			Networker.Instance.humanPrefab.name = Networker.Instance.UserName;
 			GameObject human =(GameObject)Network.Instantiate(Networker.Instance.humanPrefab, Maze.Instance.GetMazePosition(Maze.Instance.startingX,Maze.Instance.startingX)
 			                    , Quaternion.identity,0);
 			GameMaster.Instance.human = human;
 			GameMaster.Instance.npHuman = Network.player;
 		}else{
-			Networker.Instance.monsterPrefab.name = Networker.Instance.UserName;
 			GameObject monster = (GameObject)Network.Instantiate(Networker.Instance.monsterPrefab, Maze.Instance.GetMazePosition(Maze.Instance.startingX,Maze.Instance.startingX)
 			                    , Quaternion.identity,0);
 			GameMaster.Instance.AddMonster(monster);

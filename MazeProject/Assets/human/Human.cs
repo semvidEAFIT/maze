@@ -214,7 +214,7 @@ public class Human : MonoBehaviour {
 	public void AddMonster(GameObject monster){
 		monsters.Add (monster);
 	}
-	/*
+
 	bool changeName = true;
 	void OnSerializeNetworkView(BitStream stream,NetworkMessageInfo info){
 		if(changeName){
@@ -236,5 +236,4 @@ public class Human : MonoBehaviour {
 			changeName=false;
 		}
 	}
-	*/
 }
