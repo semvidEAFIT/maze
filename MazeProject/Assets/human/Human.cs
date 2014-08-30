@@ -219,13 +219,13 @@ public class Human : MonoBehaviour {
 	void OnSerializeNetworkView(BitStream stream,NetworkMessageInfo info){
 		if(changeName){
 			if(stream.isWriting){
-				char t;
+				char t='\n';
 				//foreach(char c in humanName){
 				//	t = c;
 					stream.Serialize(ref t);
 				//}
-				t = '\n';
-				stream.Serialize(ref t);
+				//t = '\n';
+				//stream.Serialize(ref t);
 			}else{
 				char c ='\0';
 				stream.Serialize(ref c);
