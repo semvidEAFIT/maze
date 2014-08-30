@@ -17,7 +17,7 @@ public class Monster : MonoBehaviour {
 			monsterName = Networker.Instance.UserName;
 		}else{
 			transform.GetComponentInChildren<Camera>().enabled = false;
-			transform.GetComponent<AudioSource>().enabled = false;
+			transform.GetComponent<AudioListener>().enabled = false;
 		}
 	}
 	// Use this for initialization
