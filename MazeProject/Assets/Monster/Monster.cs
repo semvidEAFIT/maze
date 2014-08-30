@@ -61,7 +61,7 @@ public class Monster : MonoBehaviour {
 			GUI.Label(new Rect(0,0,Screen.width*0.1f,Screen.height*0.05f),"Monster");
 		}
 	}
-
+	/*
 	bool changeName = true;
 	void OnSerializeNetworkView(BitStream stream,NetworkMessageInfo info){
 		if(changeName){
@@ -83,4 +83,5 @@ public class Monster : MonoBehaviour {
 			changeName=false;
 		}
 	}
+	*/
 }
