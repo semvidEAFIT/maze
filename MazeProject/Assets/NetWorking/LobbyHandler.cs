@@ -114,7 +114,6 @@ public class LobbyHandler : MonoBehaviour {
     public void BeginMatch()
     {
         //TODO: Load level and set player type and position
-		Debug.Log("lol");
 		Networker.Instance.LoadLevel("Level");
     }
 

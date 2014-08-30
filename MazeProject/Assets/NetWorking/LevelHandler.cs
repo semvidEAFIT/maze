@@ -61,24 +61,24 @@ public class LevelHandler : MonoBehaviour {
 	public void CheckReady()
 	{
 		playersReady++;
-		
-		Debug.Log(Networker.Instance.NetworkPlayers.Count);
+
 		if(playersReady == Networker.Instance.players.Count){// si todos listos
 
 			isReady = true;
 			int r = Random.Range(0,Networker.Instance.players.Count-1);//quien es el humano
 			//SetRole(r==0);
 			if(r==0){
+				Networker.Instance.humanPrefab.name = Networker.Instance.UserName;
 				GameObject human = (GameObject)Network.Instantiate(Networker.Instance.humanPrefab, Maze.Instance.GetMazePosition(Maze.Instance.startingX,Maze.Instance.startingX)
 				                    , Quaternion.identity,0);
 				GameMaster.Instance.human = human;
 				GameMaster.Instance.npHuman = Network.player;
 			}else{
+				Networker.Instance.monsterPrefab.name = Networker.Instance.UserName;
 				Network.Instantiate(Networker.Instance.monsterPrefab, Maze.Instance.GetMazePosition(Maze.Instance.startingX,Maze.Instance.startingX)
 				                    , Quaternion.identity,0);
 			}
 			r--;
-			Debug.Log("WTF: " + Networker.Instance.NetworkPlayers.Count);
 			for(int i = 1; i < Networker.Instance.NetworkPlayers.Count; i++){
 				if(r == i){// si es el humano
 					networkView.RPC("SetRole", Networker.Instance.NetworkPlayers[i], true);
@@ -95,7 +95,6 @@ public class LevelHandler : MonoBehaviour {
 	/// <param name="isHuman">If set to <c>true</c> the player will be human.</param>
 	[RPC]
 	public void SetRole(bool isHuman){
-		Debug.Log("created");
 		if(isHuman){
 			GameObject human =(GameObject)Network.Instantiate(Networker.Instance.humanPrefab, Maze.Instance.GetMazePosition(Maze.Instance.startingX,Maze.Instance.startingX)
 			                    , Quaternion.identity,0);
