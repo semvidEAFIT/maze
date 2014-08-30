@@ -61,4 +61,26 @@ public class Monster : MonoBehaviour {
 			GUI.Label(new Rect(0,0,Screen.width*0.1f,Screen.height*0.05f),"Monster");
 		}
 	}
+
+	bool changeName = true;
+	void OnSerializeNetworkView(BitStream stream,NetworkMessageInfo info){
+		if(changeName){
+			if(stream.isWriting){
+				char t;
+				foreach(char c in monsterName){
+					t = c;
+					stream.Serialize(ref t);
+				}
+				t = '\n';
+				stream.Serialize(ref t);
+			}else{
+				char c ='\0';
+				stream.Serialize(ref c);
+				while(c!='\n'){
+					monsterName += c;
+				}
+			}
+			changeName=false;
+		}
+	}
 }
