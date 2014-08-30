@@ -220,18 +220,18 @@ public class Human : MonoBehaviour {
 		if(changeName){
 			if(stream.isWriting){
 				char t;
-				foreach(char c in humanName){
-					t = c;
+				//foreach(char c in humanName){
+				//	t = c;
 					stream.Serialize(ref t);
-				}
+				//}
 				t = '\n';
 				stream.Serialize(ref t);
 			}else{
 				char c ='\0';
 				stream.Serialize(ref c);
-				while(c!='\n'){
+				//while(c!='\n'){
 					humanName += c;
-				}
+				//}
 			}
 			changeName=false;
 		}
