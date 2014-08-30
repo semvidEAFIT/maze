@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Human : MonoBehaviour {
 	#region variables
@@ -40,6 +41,8 @@ public class Human : MonoBehaviour {
 
 	private bool playedMonsterSeenSound;
 
+	public List<GameObject> monsters;
+	
 	/// <summary>
 	/// The sound played when the player dies.
 	/// </summary>
@@ -48,12 +51,14 @@ public class Human : MonoBehaviour {
 
 //	private bool dead = false;
 	#endregion
-
+	public string humanName;
 	void Awake(){
 		if(networkView.isMine){
 			transform.GetComponentInChildren<Camera>().enabled = true;
+			humanName = Networker.Instance.UserName;
 		}else{
 			transform.GetComponentInChildren<Camera>().enabled = false;
+			transform.GetComponent<AudioSource>().enabled = false;
 		}
 	}
 
@@ -85,6 +90,49 @@ public class Human : MonoBehaviour {
 			//play seeing monster
 			audio.PlayOneShot(seeingMonsterSound[Random.Range(0,seeingMonsterSound.Length)]);
 			timeToPlaySeeingMonster=monsterSeenDelay;
+		}
+	}
+
+	void CheckVicinity ()
+	{
+		//TODO: Refactorizar freezing / unfreezing del monstruo para que sea compatible con el networking.
+		//Se sacan el script y la posicion del humano.
+		Vector2 humanPos = new Vector2(transform.position.x, transform.position.z);
+		//Se comparara la posicion del humano con la de cada monstruo 
+		//para ver cual esta dentro del radio de vision.
+		foreach(GameObject monster in monsters){
+			//Se sacan el script y la pos. del monstruo actual.
+			Monster monsterScript = monster.GetComponent<Monster>();
+			Vector2 monsterPos = new Vector2(monster.transform.position.x, monster.transform.position.z);
+			//Se mira si el monstruo esta dentro del radio de vision.
+			if(Mathf.Sqrt(Vector2.SqrMagnitude(monsterPos - humanPos)) <= GameMaster.Instance.viewRadius){
+				//TODO:conectar con networker
+				MonsterNear();
+				//humanScript.MonsterNear();
+				
+				//CheckSeeingMonster retorna verdadero si tiene vision directa del monstruo.
+				bool seeingMonster = CheckSeeingMonster(monster);
+				string a = monsterScript.name;
+				if(seeingMonster){
+
+//					if(!monsterScript.Frozen){
+					networkView.RPC("Freeze",Networker.Instance.NameToNetworkPlayer[a],null);
+					//	monsterScript.Freeze();
+//					}
+				}
+				else{
+					networkView.RPC("Unfreeze",Networker.Instance.NameToNetworkPlayer[a],null);
+//					if(monsterScript.Frozen){
+//						monsterScript.Unfreeze();
+//					}
+				}
+			}
+			//Si no esta en el rango de vision, revisar si el monstruo esta congelado y descongelarlo.
+			else{
+				if(monsterScript.Frozen){
+					monsterScript.Unfreeze();
+				}
+			}
 		}
 	}
 
@@ -139,7 +187,6 @@ public class Human : MonoBehaviour {
 	/// <summary>
 	/// Function called when the monster is near.
 	/// </summary>
-	[RPC]
 	public void MonsterNear(){
 		Debug.Log("Near");
 		          //reproducir sonido de mounstuo cercano.
@@ -154,5 +201,17 @@ public class Human : MonoBehaviour {
 		if(networkView.isMine){
 			GUI.Label(new Rect(0,0,Screen.width*0.1f,Screen.height*0.05f),"Humano");
 		}
+	}
+
+	public List<GameObject> Monsters {
+		get {
+			return monsters;
+		}
+		set {
+			monsters = value;
+		}
+	}
+	public void AddMonster(GameObject monster){
+		monsters.Add (monster);
 	}
 }

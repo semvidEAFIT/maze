@@ -16,8 +16,14 @@ public class LobbyHandler : MonoBehaviour {
     }
 
     void Start() {
-        ready.Add(Networker.Instance.UserName, false);
-        if (Network.isClient) {
+        //ready.Add(Networker.Instance.UserName, false);
+		if(Network.isServer){
+			Networker.Instance.NetworkPlayers.Add(Network.player);
+			Networker.Instance.NameToNetworkPlayer.Add(Networker.Instance.UserName,Network.player);
+			Networker.Instance.players.Add(Networker.Instance.UserName);
+			ready.Add(Networker.Instance.UserName,false);
+		}
+		if (Network.isClient) {
             networkView.RPC("JoinedMatch", RPCMode.Server, Networker.Instance.UserName, Network.player);
         }
     }
@@ -26,7 +32,7 @@ public class LobbyHandler : MonoBehaviour {
     public void JoinedMatch(string userName, NetworkPlayer networkPlayer)
     {
         Networker.Instance.players.Add(userName);
-
+		ready.Add(userName,false);
         JSONArray players = new JSONArray();
         foreach (string playerName in ready.Keys)
         {
@@ -37,11 +43,12 @@ public class LobbyHandler : MonoBehaviour {
         }
 
 		networkView.RPC("InitializePlayers", networkPlayer, players.ToString());
-		networkView.RPC("AddNetworkView", RPCMode.Others, Network.player);
-		networkView.RPC("AddNetworkView", RPCMode.Others, networkPlayer);
+
+		networkView.RPC("AddNetworkView", networkPlayer, Network.player, Networker.Instance.UserName);
+		networkView.RPC("AddNetworkView", RPCMode.OthersBuffered, networkPlayer, userName);
 		Networker.Instance.NetworkPlayers.Add(networkPlayer);
 
-        ready.Add(userName, false);
+		Networker.Instance.NameToNetworkPlayer.Add(userName,networkPlayer);
         
         JSONObject newPlayer = new JSONObject();
         newPlayer.Add("userName", userName);
@@ -56,14 +63,18 @@ public class LobbyHandler : MonoBehaviour {
         {
             JSONObject player = players[i].Obj;
             ready.Add(player.GetString("userName"), player.GetBoolean("isReady"));
-            Networker.Instance.players.Add(player.GetString("userName"));
+            //Networker.Instance.players.Add(player.GetString("userName"));
         }
     }
 
 	[RPC]
-	public void AddNetworkView(NetworkPlayer networkPlayer){
+	public void AddNetworkView(NetworkPlayer networkPlayer, string name){
 		Networker.Instance.NetworkPlayers.Add(networkPlayer);
+		Networker.Instance.players.Add(name);
+		Networker.Instance.NameToNetworkPlayer.Add(name,networkPlayer);
+		//ready.Add(name,false);
 	}
+
     public void SetReady(bool isReady)
     {
         ready[Networker.Instance.UserName] = isReady;
@@ -83,7 +94,7 @@ public class LobbyHandler : MonoBehaviour {
         }
         else 
         {
-            Networker.Instance.players.Add(isReady.GetString("userName"));
+            //Networker.Instance.players.Add(isReady.GetString("userName"));
             ready.Add(isReady.GetString("userName"), isReady.GetBoolean("isReady"));
         }
     }

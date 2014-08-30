@@ -16,7 +16,7 @@ public class GameMaster : MonoBehaviour {
     public GameObject human;
 	public NetworkPlayer npHuman;
     public GameObject monster;
-	public List<GameObject> monsters;
+	private List<GameObject> monsters;
 	public float viewRadius;
 
 	public AudioClip introAmbience;
@@ -39,6 +39,7 @@ public class GameMaster : MonoBehaviour {
 	void Start(){
         numberOfPlayers = Networker.Instance.players.Count;
 		GameObject.Find("Networker").GetComponent<LevelHandler>().levelLoaded = true;
+		monsters = new List<GameObject>();
         //TODO: Spawn players in different positions and different prefabs
 
 	}
@@ -57,7 +58,7 @@ public class GameMaster : MonoBehaviour {
 	}
 
 	void Update(){
-		CheckVicinity();
+		//CheckVicinity();
 	}
 
 	/// <summary>
@@ -145,5 +146,24 @@ public class GameMaster : MonoBehaviour {
 			yield return new WaitForSeconds(0);
 		}
 
+	}
+
+	public List<GameObject> Monsters {
+		get {
+			return monsters;
+		}
+	}
+
+	private bool humanReady = false;
+	public void AddMonster(GameObject monster){
+		monsters.Add(monster);
+		if(!humanReady){
+			if(human!=null){
+				human.GetComponent<Human>().Monsters = monsters;
+				humanReady = true;
+			}
+		}else{
+			human.GetComponent<Human>().AddMonster(monster);
+		}
 	}
 }

@@ -19,22 +19,36 @@ public class Networker : MonoBehaviour {
     private static Networker instance;
 
     public List<string> players;
+	
     private string userName;
-    public string UserName
-    {
-        get { return userName; }
-        set { 
-            userName = value;
-            players.Add(userName);
-        }
-    }
 
+	public string UserName {
+		get {
+			return userName;
+		}
+		set {
+			userName = value;
+		}
+	}
+	
+   
+	//TODO: quitar networkplayers y players, reemplazarlos por nameToNetworkPlayers
     private List<NetworkPlayer> networkPlayers;
 
     public List<NetworkPlayer> NetworkPlayers
     {
         get { return networkPlayers; }
     }
+
+	private Dictionary<string,NetworkPlayer> nameToNetworkPlayer;
+
+	public Dictionary<string, NetworkPlayer> NameToNetworkPlayer {
+		get {
+			return nameToNetworkPlayer;
+		}
+	}
+
+
 
     public static Networker Instance
     {
@@ -57,13 +71,14 @@ public class Networker : MonoBehaviour {
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+			Debug.Log("Created");
         }
         else
         {
             Debug.Log("Only one networker per client is allowed.");
             Destroy(gameObject);
         }
-
+		nameToNetworkPlayer = new Dictionary<string,NetworkPlayer>(4);
         networkPlayers = new List<NetworkPlayer>(4);
     }
 
@@ -95,6 +110,6 @@ public class Networker : MonoBehaviour {
 
     void OnPlayerConnected(NetworkPlayer player)
     {
-        networkPlayers.Add(player);
+       // networkPlayers.Add(player);
     }
 }

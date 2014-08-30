@@ -17,13 +17,13 @@ public class ServerListGUI : MonoBehaviour {
 
         GUILayout.BeginHorizontal();
         if(GUILayout.Button("Create Server")){
-            Networker.Instance.UserName = name;
+			Networker.Instance.UserName = name;
             Networker.Instance.CreateServer();
         }
 
         GUILayout.BeginVertical();
         if (GUILayout.Button("Join")) {
-            Networker.Instance.UserName = name;
+	            Networker.Instance.UserName = name;
             Networker.Instance.JoinMatch(ip);
         }
 
