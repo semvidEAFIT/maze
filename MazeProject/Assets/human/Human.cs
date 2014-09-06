@@ -58,7 +58,7 @@ public class Human : MonoBehaviour {
 			humanName = Networker.Instance.UserName;
 		}else{
 			transform.GetComponentInChildren<Camera>().enabled = false;
-			transform.GetComponent<AudioListener>().enabled = false;
+//			transform.GetComponent<AudioListener>().enabled = false;
 		}
 	}
 
