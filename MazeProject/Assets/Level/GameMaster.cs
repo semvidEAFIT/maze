@@ -99,12 +99,16 @@ public class GameMaster : MonoBehaviour {
 				//CheckSeeingMonster retorna verdadero si tiene vision directa del monstruo.
 				bool seeingMonster = humanScript.CheckSeeingMonster(monster);
 				if(seeingMonster){
+				   if(!monsterScript.Frozen){
 						//monsterScript.Freeze();
 						monster.GetComponent<Monster>().SendRPC("Freeze", Networker.Instance.NameToNetworkPlayer[monsters[monster]]);
+					}
 				}
 				else{
+					if(monsterScript.Frozen){
 						//monsterScript.Unfreeze();
 						monster.GetComponent<Monster>().SendRPC("Unfreeze", Networker.Instance.NameToNetworkPlayer[monsters[monster]]);
+					}
 				}
 			}
 			//Si no esta en el rango de vision, revisar si el monstruo esta congelado y descongelarlo.

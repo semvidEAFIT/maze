@@ -39,7 +39,7 @@ public class Monster : MonoBehaviour {
 		}
 		//play the freeze sound
 
-
+		networkView.RPC("SetFrozen", RPCMode.Others , true);
 		frozen = true;
 	}
 	[RPC]
@@ -49,11 +49,15 @@ public class Monster : MonoBehaviour {
 		//reanudar movimiento
 		if(frozen){
 			moveScript.UnfreezeMovement();
-
 			frozen = false;
+			networkView.RPC("SetFrozen", RPCMode.Others , false);
 		}
 	}
 
+	[RPC]
+	public void SetFrozen(bool frz){
+		frozen = frz;
+	}
 	
 	void OnGUI(){
 		if(networkView.isMine){
