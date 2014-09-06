@@ -113,7 +113,4 @@ public class Networker : MonoBehaviour {
        // networkPlayers.Add(player);
     }
 
-	public void SendRPC(string method, NetworkPlayer player){
-		networkView.RPC(method, player, null);
-	}
 }

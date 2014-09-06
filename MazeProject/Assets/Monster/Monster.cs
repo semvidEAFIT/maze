@@ -15,7 +15,6 @@ public class Monster : MonoBehaviour {
 		if(networkView.isMine){
 			transform.GetComponentInChildren<Camera>().enabled = true;
 			monsterName = Networker.Instance.UserName;
-			GameMaster.Instance.Monsters.Add (this.gameObject,monsterName);
 		}else{
 			transform.GetComponentInChildren<Camera>().enabled = false;
 			transform.GetComponent<AudioListener>().enabled = false;
@@ -23,6 +22,7 @@ public class Monster : MonoBehaviour {
 	}
 	// Use this for initialization
 	void Start () {
+		GameMaster.Instance.Monsters.Add (this.gameObject,monsterName);
 		moveScript = this.gameObject.GetComponent<Movement>();
 	}
 	
