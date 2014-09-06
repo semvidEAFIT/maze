@@ -22,7 +22,6 @@ public class Monster : MonoBehaviour {
 	}
 	// Use this for initialization
 	void Start () {
-		GameMaster.Instance.Monsters.Add (this.gameObject,monsterName);
 		moveScript = this.gameObject.GetComponent<Movement>();
 	}
 	
@@ -43,11 +42,10 @@ public class Monster : MonoBehaviour {
 
 		frozen = true;
 	}
-
+	[RPC]
 	public void Unfreeze ()
 	{
-		//TODO: Refactorizar unfreezing del monstruo para que sea compatible con el networking.
-
+		//TODO: Refactorizar unfreezing del monstruo para que sea compatible con el networking
 		//reanudar movimiento
 		if(frozen){
 			moveScript.UnfreezeMovement();
@@ -81,9 +79,9 @@ public class Monster : MonoBehaviour {
 					monsterName += c;
 					stream.Serialize(ref c);
 				}
-				GameMaster.Instance.Monsters.Add(this.gameObject,monsterName);
 			}
 			changeName=false;
+			GameMaster.Instance.Monsters.Add (this.gameObject,monsterName);
 		}
 	}
 

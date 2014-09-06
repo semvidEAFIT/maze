@@ -99,7 +99,7 @@ public class LevelHandler : MonoBehaviour {
 			GameMaster.Instance.human = human;
 			GameMaster.Instance.npHuman = Network.player;
 		}else{
-			GameObject monster = (GameObject)Network.Instantiate(Networker.Instance.monsterPrefab, Maze.Instance.GetMazePosition(Maze.Instance.startingX,Maze.Instance.startingX)
+			GameObject monster = (GameObject)Network.Instantiate(Networker.Instance.monsterPrefab, Maze.Instance.GetMazePosition(2,2/*Maze.Instance.startingX,Maze.Instance.startingX*/)
 			                    , Quaternion.identity,0);
 //			GameMaster.Instance.AddMonster(monster);
 		}
