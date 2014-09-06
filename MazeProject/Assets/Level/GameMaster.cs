@@ -17,6 +17,7 @@ public class GameMaster : MonoBehaviour {
 	public NetworkPlayer npHuman;
     public GameObject monster;
 	private Dictionary<GameObject,string> monsters;
+
 	public float viewRadius;
 
 	public AudioClip introAmbience;
@@ -100,13 +101,13 @@ public class GameMaster : MonoBehaviour {
 				if(seeingMonster){
 				   if(!monsterScript.Frozen){
 						//monsterScript.Freeze();
-						networkView.RPC("Freeze",Networker.Instance.NameToNetworkPlayer[monsters[monster]],null);
+						monster.GetComponent<Monster>().SendRPC("Freeze", Networker.Instance.NameToNetworkPlayer[monsters[monster]]);
 					}
 				}
 				else{
 					if(monsterScript.Frozen){
 						//monsterScript.Unfreeze();
-						networkView.RPC("Unfreeze",Networker.Instance.NameToNetworkPlayer[monsters[monster]],null);
+						monster.GetComponent<Monster>().SendRPC("Unfreeze", Networker.Instance.NameToNetworkPlayer[monsters[monster]]);
 					}
 				}
 			}

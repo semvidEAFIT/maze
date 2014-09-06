@@ -30,7 +30,7 @@ public class Monster : MonoBehaviour {
 	void Update () {
 		
 	}
-
+	[RPC]
 	public void Freeze ()
 	{
 		//TODO: Refactorizar freezing del monstruo para que sea compatible con el networking.
@@ -85,6 +85,11 @@ public class Monster : MonoBehaviour {
 			}
 			changeName=false;
 		}
+	}
+
+	
+	public void SendRPC(string method, NetworkPlayer player){
+		networkView.RPC(method, player, null);
 	}
 
 }
