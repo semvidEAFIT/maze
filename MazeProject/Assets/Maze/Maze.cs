@@ -59,7 +59,7 @@ public class Maze : MonoBehaviour {
     }
 
 	void Awake(){ 
-		if (instance != null || !Network.isServer) Destroy(gameObject); // Don't create this maze.
+		if (instance != null || !Network.isServer) Destroy(this); // Don't create this maze.
 		instance = this;
 	}
 

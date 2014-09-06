@@ -58,7 +58,7 @@ public class Human : MonoBehaviour {
 			humanName = Networker.Instance.UserName;
 		}else{
 			transform.GetComponentInChildren<Camera>().enabled = false;
-			transform.GetComponent<AudioListener>().enabled = false;
+//			transform.GetComponent<AudioListener>().enabled = false;
 		}
 	}
 
@@ -70,26 +70,29 @@ public class Human : MonoBehaviour {
 	}
 
 	void Update(){
-		if(sanity > 0){
-			sanity -= sanityLossQtyPerSec * Time.deltaTime;
-		} else {
-			if(!playerIsDead){
-				Die();
+		if(networkView.isMine){
+			GameMaster.Instance.CheckVicinity();
+			if(sanity > 0){
+				sanity -= sanityLossQtyPerSec * Time.deltaTime;
+			} else {
+				if(!playerIsDead){
+					Die();
+				}
 			}
-		}
 
-		if(timeToPlayNear>0){
-			timeToPlayNear -= Time.deltaTime;
-		}
-
-		if(timeToPlaySeeingMonster > 0){
-			if(!seeingMonster){
-				timeToPlaySeeingMonster -= Time.deltaTime;
+			if(timeToPlayNear>0){
+				timeToPlayNear -= Time.deltaTime;
 			}
-		} else if(seeingMonster) {
-			//play seeing monster
-			audio.PlayOneShot(seeingMonsterSound[Random.Range(0,seeingMonsterSound.Length)]);
-			timeToPlaySeeingMonster=monsterSeenDelay;
+
+			if(timeToPlaySeeingMonster > 0){
+				if(!seeingMonster){
+					timeToPlaySeeingMonster -= Time.deltaTime;
+				}
+			} else if(seeingMonster) {
+				//play seeing monster
+				audio.PlayOneShot(seeingMonsterSound[Random.Range(0,seeingMonsterSound.Length)]);
+				timeToPlaySeeingMonster=monsterSeenDelay;
+			}
 		}
 	}
 
@@ -220,18 +223,19 @@ public class Human : MonoBehaviour {
 		if(changeName){
 			if(stream.isWriting){
 				char t='\n';
-				//foreach(char c in humanName){
-				//	t = c;
+				foreach(char c in humanName){
+					t = c;
 					stream.Serialize(ref t);
-				//}
-				//t = '\n';
-				//stream.Serialize(ref t);
+				}
+				t = '\n';
+				stream.Serialize(ref t);
 			}else{
-				char c ='\0';
+				char c ='b';
 				stream.Serialize(ref c);
-				//while(c!='\n'){
+				while(c!='\n'){
 					humanName += c;
-				//}
+					stream.Serialize(ref c);
+				}
 			}
 			changeName=false;
 		}

@@ -29,7 +29,7 @@ public class Monster : MonoBehaviour {
 	void Update () {
 		
 	}
-
+	[RPC]
 	public void Freeze ()
 	{
 		//TODO: Refactorizar freezing del monstruo para que sea compatible con el networking.
@@ -39,22 +39,25 @@ public class Monster : MonoBehaviour {
 		}
 		//play the freeze sound
 
-
+		networkView.RPC("SetFrozen", RPCMode.Others , true);
 		frozen = true;
 	}
-
+	[RPC]
 	public void Unfreeze ()
 	{
-		//TODO: Refactorizar unfreezing del monstruo para que sea compatible con el networking.
-
+		//TODO: Refactorizar unfreezing del monstruo para que sea compatible con el networking
 		//reanudar movimiento
 		if(frozen){
 			moveScript.UnfreezeMovement();
-
 			frozen = false;
+			networkView.RPC("SetFrozen", RPCMode.Others , false);
 		}
 	}
 
+	[RPC]
+	public void SetFrozen(bool frz){
+		frozen = frz;
+	}
 	
 	void OnGUI(){
 		if(networkView.isMine){
@@ -66,21 +69,29 @@ public class Monster : MonoBehaviour {
 	void OnSerializeNetworkView(BitStream stream,NetworkMessageInfo info){
 		if(changeName){
 			if(stream.isWriting){
-				char t = '\n';;
-				//foreach(char c in monsterName){
-				//	t = c;
+				char t = 'a';
+				foreach(char c in monsterName){
+					t = c;
 					stream.Serialize(ref t);
-				//}
-				//t = '\n';
+				}
+				t = '\n';
 				stream.Serialize(ref t);
 			}else{
-				char c ='\0';
+				char c ='b';
 				stream.Serialize(ref c);
-				//while(c!='\n'){
+				while(c!='\n'){
 					monsterName += c;
-				//}
+					stream.Serialize(ref c);
+				}
 			}
 			changeName=false;
+			GameMaster.Instance.Monsters.Add (this.gameObject,monsterName);
 		}
 	}
+
+	
+	public void SendRPC(string method, NetworkPlayer player){
+		networkView.RPC(method, player, null);
+	}
+
 }
