@@ -70,6 +70,7 @@ public class Human : MonoBehaviour {
 	}
 
 	void Update(){
+		GameMaster.Instance.CheckVicinity();
 		if(sanity > 0){
 			sanity -= sanityLossQtyPerSec * Time.deltaTime;
 		} else {
@@ -215,25 +216,26 @@ public class Human : MonoBehaviour {
 		monsters.Add (monster);
 	}
 
-	/*bool changeName = true;
+	bool changeName = true;
 	void OnSerializeNetworkView(BitStream stream,NetworkMessageInfo info){
 		if(changeName){
 			if(stream.isWriting){
 				char t='\n';
-				//foreach(char c in humanName){
-				//	t = c;
+				foreach(char c in humanName){
+					t = c;
 					stream.Serialize(ref t);
-				//}
-				//t = '\n';
-				//stream.Serialize(ref t);
+				}
+				t = '\n';
+				stream.Serialize(ref t);
 			}else{
-				char c ='\0';
+				char c ='b';
 				stream.Serialize(ref c);
-				//while(c!='\n'){
+				while(c!='\n'){
 					humanName += c;
-				//}
+					stream.Serialize(ref c);
+				}
 			}
 			changeName=false;
 		}
-	}*/
+	}
 }

@@ -16,7 +16,7 @@ public class GameMaster : MonoBehaviour {
     public GameObject human;
 	public NetworkPlayer npHuman;
     public GameObject monster;
-	private List<GameObject> monsters;
+	private Dictionary<GameObject,string> monsters;
 	public float viewRadius;
 
 	public AudioClip introAmbience;
@@ -39,7 +39,7 @@ public class GameMaster : MonoBehaviour {
 	void Start(){
         numberOfPlayers = Networker.Instance.players.Count;
 		GameObject.Find("Networker").GetComponent<LevelHandler>().levelLoaded = true;
-		monsters = new List<GameObject>();
+		monsters = new Dictionary<GameObject,string >();
         //TODO: Spawn players in different positions and different prefabs
 
 	}
@@ -77,7 +77,7 @@ public class GameMaster : MonoBehaviour {
 	/// Checks the human's vicinity to monsters, 
 	/// to freeze / unfreeze monsters if necessary (if the player is seeing them).
 	/// </summary>
-	void CheckVicinity ()
+	public void CheckVicinity ()
 	{
 		//TODO: Refactorizar freezing / unfreezing del monstruo para que sea compatible con el networking.
 		//Se sacan el script y la posicion del humano.
@@ -85,26 +85,28 @@ public class GameMaster : MonoBehaviour {
 		Human humanScript = human.GetComponent<Human>();
 		//Se comparara la posicion del humano con la de cada monstruo 
 		//para ver cual esta dentro del radio de vision.
-		foreach(GameObject monster in monsters){
+		foreach(GameObject monster in monsters.Keys){
 			//Se sacan el script y la pos. del monstruo actual.
 			Monster monsterScript = monster.GetComponent<Monster>();
 			Vector2 monsterPos = new Vector2(monster.transform.position.x, monster.transform.position.z);
 			//Se mira si el monstruo esta dentro del radio de vision.
 			if(Mathf.Sqrt(Vector2.SqrMagnitude(monsterPos - humanPos)) <= viewRadius){
 				//TODO:conectar con networker
-				networkView.RPC("MonsterNear",npHuman,null);
+				//networkView.RPC("MonsterNear",npHuman,null);
 				//humanScript.MonsterNear();
 
 				//CheckSeeingMonster retorna verdadero si tiene vision directa del monstruo.
 				bool seeingMonster = humanScript.CheckSeeingMonster(monster);
 				if(seeingMonster){
 				   if(!monsterScript.Frozen){
-						monsterScript.Freeze();
+						//monsterScript.Freeze();
+						networkView.RPC("Freeze",Networker.Instance.NameToNetworkPlayer[monsters[monster]],null);
 					}
 				}
 				else{
 					if(monsterScript.Frozen){
-						monsterScript.Unfreeze();
+						//monsterScript.Unfreeze();
+						networkView.RPC("Unfreeze",Networker.Instance.NameToNetworkPlayer[monsters[monster]],null);
 					}
 				}
 			}
@@ -148,14 +150,14 @@ public class GameMaster : MonoBehaviour {
 
 	}
 
-	public List<GameObject> Monsters {
+	public Dictionary<GameObject,string> Monsters {
 		get {
 			return monsters;
 		}
 	}
 
 	private bool humanReady = false;
-	public void AddMonster(GameObject monster){
+	/*public void AddMonster(GameObject monster){
 		monsters.Add(monster);
 		if(!humanReady){
 			if(human!=null){
@@ -165,5 +167,5 @@ public class GameMaster : MonoBehaviour {
 		}else{
 			human.GetComponent<Human>().AddMonster(monster);
 		}
-	}
+	}*/
 }

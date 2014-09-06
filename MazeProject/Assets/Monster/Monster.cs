@@ -15,6 +15,7 @@ public class Monster : MonoBehaviour {
 		if(networkView.isMine){
 			transform.GetComponentInChildren<Camera>().enabled = true;
 			monsterName = Networker.Instance.UserName;
+			GameMaster.Instance.Monsters.Add (this.gameObject,monsterName);
 		}else{
 			transform.GetComponentInChildren<Camera>().enabled = false;
 			transform.GetComponent<AudioListener>().enabled = false;
@@ -67,18 +68,20 @@ public class Monster : MonoBehaviour {
 		if(changeName){
 			if(stream.isWriting){
 				char t = 'a';
-				//foreach(char c in monsterName){
-				//	t = c;
+				foreach(char c in monsterName){
+					t = c;
 					stream.Serialize(ref t);
-				//}
-				//t = '\n';
-				//stream.Serialize(ref t);
+				}
+				t = '\n';
+				stream.Serialize(ref t);
 			}else{
 				char c ='b';
 				stream.Serialize(ref c);
-				//while(c!='\n'){
+				while(c!='\n'){
 					monsterName += c;
-				//}
+					stream.Serialize(ref c);
+				}
+				GameMaster.Instance.Monsters.Add(this.gameObject,monsterName);
 			}
 			changeName=false;
 		}
