@@ -8,6 +8,11 @@ public class HitSkill : Skill {
 	/// </summary>
 	public float attackDistance = 1f;
 
+	///The minimum time that must pass to be able to strike again
+	public float strikeSpeed = 0.5f;
+
+	private float timeSinceLastStrike;
+
 	/// <summary>
 	/// Indicates if the monster killed the human to avoid calling the Die method more than once.
 	/// </summary>
@@ -19,12 +24,16 @@ public class HitSkill : Skill {
 
 	// Use this for initialization
 	void Start () {
-	
+		timeSinceLastStrike = strikeSpeed;
 	}
 	
 	// Update is called once per frame
 	public override void Update () {
 		base.Update();
+
+		if(timeSinceLastStrike <= strikeSpeed){
+			timeSinceLastStrike += Time.deltaTime;
+		}
 	}
 
 	public override bool CheckInput(){
@@ -35,17 +44,21 @@ public class HitSkill : Skill {
 	/// Executes the skill. Shoots a spherecast and checks if it hit the player, if they are within te attackDistance.
 	/// </summary>
 	public override void Execute(){
-		audio.clip = swipeSound;
-		audio.Play();	
+		if(timeSinceLastStrike >= strikeSpeed){
+			timeSinceLastStrike = 0;
 
-		Ray ray = new Ray(transform.position, transform.forward);
-		RaycastHit hit;
-		if(Physics.SphereCast(ray, 1f, out hit, attackDistance)){
-			if(hit.collider.CompareTag(ETag.Human.ToString()) && !killedHuman){
-//				audio.PlayOneShot(hitSound);
-				StartCoroutine(CheckForSwipeEnd());
-				hit.collider.gameObject.GetComponent<Human>().Die();
-				killedHuman = true;
+			audio.clip = swipeSound;
+			audio.Play();	
+
+			Ray ray = new Ray(transform.position, transform.forward);
+			RaycastHit hit;
+			if(Physics.SphereCast(ray, 1f, out hit, attackDistance)){
+				if(hit.collider.CompareTag(ETag.Human.ToString()) && !killedHuman){
+	//				audio.PlayOneShot(hitSound);
+					StartCoroutine(CheckForSwipeEnd());
+					hit.collider.gameObject.GetComponent<Human>().Die();
+					killedHuman = true;
+				}
 			}
 		}
 	}
