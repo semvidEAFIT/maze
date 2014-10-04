@@ -71,7 +71,8 @@ public class Movement : MonoBehaviour {
 		if(!frozen){
         	Run();
 		}
-        Debug.Log(motor.GetVelocity());
+        //TODO: el volumen de los pasos debe ser mayor o menor dependiendo de la velocidad del jugador.
+        //Debug.Log(motor.GetVelocity().magnitude);
 	}
 
     /// <summary>
