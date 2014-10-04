@@ -71,7 +71,6 @@ public class Networker : MonoBehaviour {
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-			Debug.Log("Created");
         }
         else
         {

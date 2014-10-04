@@ -71,6 +71,7 @@ public class Movement : MonoBehaviour {
 		if(!frozen){
         	Run();
 		}
+        Debug.Log(motor.GetVelocity());
 	}
 
     /// <summary>
