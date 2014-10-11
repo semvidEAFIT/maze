@@ -55,6 +55,7 @@ public class HitSkill : Skill {
 			if(Physics.SphereCast(ray, 1f, out hit, attackDistance)){
 				if(hit.collider.CompareTag(ETag.Human.ToString()) && !killedHuman){
 	//				audio.PlayOneShot(hitSound);
+					string name = hit.transform.GetComponent<Human>().name;
 					StartCoroutine(CheckForSwipeEnd());
 					hit.collider.gameObject.GetComponent<Human>().Die();
 					killedHuman = true;
@@ -63,18 +64,19 @@ public class HitSkill : Skill {
 		}
 	}
 
+
 	//revisa si el swipe termino de reproducir y reproduce el sonido de que mato el humano
 	private IEnumerator CheckForSwipeEnd(){
 		//revisar si el sonido de intro termino.
-		for(;;){
+		/*for(;;){
 			//si si, poner el clip del audiosource como el loop ppal.
 			if(!audio.isPlaying){
 				audio.clip = hitSound;
 				audio.Play();
 				break;
-			}
+			}*/
 			yield return new WaitForSeconds(0);
-		}
+		//}
 		
 	}
 }

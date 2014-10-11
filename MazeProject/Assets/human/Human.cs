@@ -142,6 +142,7 @@ public class Human : MonoBehaviour {
 	public void Die(){
 		sanity = 0f;
 		GameMaster.Instance.HumanWasKilled();
+		Networker.Instance.EndGame(true);
 		gameObject.transform.localScale *= 0.1f;
 		transform.Rotate(new Vector3(90f, 0f, 0f));
 		GetComponent<CharacterController>().radius *= 10f;
@@ -239,5 +240,13 @@ public class Human : MonoBehaviour {
 			}
 			changeName=false;
 		}
+	}
+
+	public void CallEnd(){
+		networkView.SendMessage("End",RPCMode.All);
+	}
+	[RPC]
+	public void End(){
+		transform.GetComponent<CharacterController>().enabled = false;
 	}
 }

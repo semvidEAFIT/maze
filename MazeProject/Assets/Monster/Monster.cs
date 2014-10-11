@@ -58,7 +58,8 @@ public class Monster : MonoBehaviour {
 	public void SetFrozen(bool frz){
 		frozen = frz;
 	}
-	
+
+
 	void OnGUI(){
 		if(networkView.isMine){
 			GUI.Label(new Rect(0,0,Screen.width*0.1f,Screen.height*0.05f),"Monster");
@@ -93,5 +94,11 @@ public class Monster : MonoBehaviour {
 	public void SendRPC(string method, NetworkPlayer player){
 		networkView.RPC(method, player, null);
 	}
-
+	public void CallEnd(){
+		networkView.SendMessage("End",RPCMode.All);
+	}
+	[RPC]
+	public void End(){
+		transform.GetComponent<CharacterController>().enabled = false;
+	}
 }
