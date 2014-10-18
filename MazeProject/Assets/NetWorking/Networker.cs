@@ -71,7 +71,6 @@ public class Networker : MonoBehaviour {
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-			Debug.Log("Created");
         }
         else
         {
@@ -113,4 +112,24 @@ public class Networker : MonoBehaviour {
        // networkPlayers.Add(player);
     }
 
+	public void SendToName(){
+
+	}
+	public void SendToAll(string method){
+		foreach(NetworkPlayer np in nameToNetworkPlayer.Values){
+			networkView.RPC(method,np,null);
+		}
+	}
+	[RPC]
+	public void EndGame(bool first){
+		if(first){
+			networkView.RPC("EndGame",RPCMode.Others,false);
+		}else{
+			GameMaster.Instance.HumanWasKilled();
+		}
+		foreach(GameObject g in GameMaster.Instance.Monsters.Keys){
+			g.transform.GetComponent<Monster>().CallEnd();
+		}
+		GameMaster.Instance.human.transform.GetComponent<Human>().CallEnd();
+	}
 }
