@@ -16,6 +16,7 @@ public class ServerListGUI : MonoBehaviour {
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+
         if(GUILayout.Button("Create Server")){
 			Networker.Instance.UserName = name;
             Networker.Instance.CreateServer();
@@ -23,7 +24,7 @@ public class ServerListGUI : MonoBehaviour {
 
         GUILayout.BeginVertical();
         if (GUILayout.Button("Join")) {
-	            Networker.Instance.UserName = name;
+	        Networker.Instance.UserName = name;
             Networker.Instance.JoinMatch(ip);
         }
 
