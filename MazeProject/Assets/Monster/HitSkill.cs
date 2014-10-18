@@ -20,7 +20,7 @@ public class HitSkill : Skill {
 
 	public AudioClip hitSound;
 
-	public AudioClip swipeSound;
+	public AudioClip[] swipeSounds;
 
 	// Use this for initialization
 	void Start () {
@@ -47,7 +47,9 @@ public class HitSkill : Skill {
 		if(timeSinceLastStrike >= strikeSpeed){
 			timeSinceLastStrike = 0;
 
-			audio.clip = swipeSound;
+			int randomIndex = Random.Range(0, swipeSounds.Length);
+			Debug.Log(randomIndex);
+			audio.clip = swipeSounds[randomIndex];
 			audio.Play();	
 
 			Ray ray = new Ray(transform.position, transform.forward);
