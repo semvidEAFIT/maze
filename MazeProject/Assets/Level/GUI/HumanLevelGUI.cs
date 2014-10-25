@@ -17,13 +17,13 @@ public class HumanLevelGUI : LevelGUI
 	#endregion
 	
 	#region Singleton
-	private LevelGUI instance;
+/*	private LevelGUI instance;
 	
 	public LevelGUI Instance
 	{
 		get { return instance; }
 	}
-	
+	*/
 	public override void Awake () {
 		base.Awake();
 	}

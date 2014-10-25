@@ -87,5 +87,8 @@ public abstract class LevelGUI : MonoBehaviour
     public static string FormatNumber(int n) { 
         return (n <= 9)? "0"+n : ""+n;
     }
-    #endregion
+	#endregion
+	void OnDestroy() {
+		instance=null;
+	}
 }
