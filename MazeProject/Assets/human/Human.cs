@@ -47,7 +47,8 @@ public class Human : MonoBehaviour {
 	/// <summary>
 	/// The sound played when the player dies.
 	/// </summary>
-	public AudioClip playerDead;
+	public AudioClip[] playerDead;
+
 	private bool playerIsDead;
 
 //	private bool dead = false;
@@ -154,7 +155,7 @@ public class Human : MonoBehaviour {
 		GetComponent<CharacterController>().radius *= 10f;
 
 		//play death sound.
-		audio.PlayOneShot(playerDead);
+		audio.PlayOneShot(playerDead[Random.Range(0,playerDead.Length)]);
 		playerIsDead = true;
 	}
 

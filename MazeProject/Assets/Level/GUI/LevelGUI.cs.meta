@@ -2,7 +2,9 @@ fileFormatVersion: 2
 guid: e36576d504ae4af44941c7ab3a6cf1e0
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - blackScreen: {fileID: 2800000, guid: 3338de0353bf0ea40b332faf4fd04ee4, type: 3}
+  - skin: {fileID: 11400000, guid: 353af29a1588d354b8972946e76edebf, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
