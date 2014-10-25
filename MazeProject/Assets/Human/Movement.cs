@@ -53,6 +53,9 @@ public class Movement : MonoBehaviour {
 	private float stepTimer;
 	public float timeBetweenSteps = 1;
 
+    private AudioSource stepsAudio;
+    private float walkingStepsVolume = 0f;
+
 	void Start () {
 		initialFieldOfView = currentFieldOfView = Camera.main.fieldOfView;
 		if(stepSounds == null || stepSounds.Length==0){
@@ -65,6 +68,7 @@ public class Movement : MonoBehaviour {
 		timeRested = 0;
 		stepTimer = timeBetweenSteps;
 		frozen = false;
+        stepsAudio = transform.FindChild("StepSoundManager").GetComponent<AudioSource>();
 	}
 
 	void Update () {
@@ -72,7 +76,11 @@ public class Movement : MonoBehaviour {
         	Run();
 		}
         //TODO: el volumen de los pasos debe ser mayor o menor dependiendo de la velocidad del jugador.
-        //Debug.Log(motor.GetVelocity().magnitude);
+        if (networkView.isMine)
+        {
+            Debug.Log(motor.GetVelocity().magnitude);
+        }
+        walkingStepsVolume = motor.GetVelocity().magnitude / motor.movement.maxForwardSpeed;
 	}
 
     /// <summary>
@@ -148,7 +156,7 @@ public class Movement : MonoBehaviour {
     /// </summary>
 	public void PlayStep(bool running){
 		if(!running){
-			audio.PlayOneShot(stepSounds[(int) (Random.value * stepSounds.Length-1)]);
+			audio.PlayOneShot(stepSounds[(int) (Random.value * stepSounds.Length-1)], walkingStepsVolume);
 		}
 		else{
 			audio.PlayOneShot(runningStepSounds[(int) (Random.value * stepSounds.Length-1)]);
