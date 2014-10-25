@@ -49,8 +49,8 @@ public class HitSkill : Skill {
 
 			int randomIndex = Random.Range(0, swipeSounds.Length);
 //			Debug.Log(randomIndex);
-			audio.clip = swipeSounds[randomIndex];
-			audio.Play();	
+//			audio.clip = swipeSounds[randomIndex];
+//			audio.Play();	
 
 			Ray ray = new Ray(transform.position, transform.forward);
 			RaycastHit hit;

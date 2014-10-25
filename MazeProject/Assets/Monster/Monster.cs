@@ -6,6 +6,7 @@ public class Monster : MonoBehaviour {
 	private Movement moveScript;
 	public string monsterName;
 	private bool frozen;
+	public MonsterLevelGUI mlg;
 	public bool Frozen {
 		get{
 			return frozen;
@@ -15,9 +16,14 @@ public class Monster : MonoBehaviour {
 		if(networkView.isMine){
 			transform.GetComponentInChildren<Camera>().enabled = true;
 			monsterName = Networker.Instance.UserName;
+			gameObject.AddComponent<MonsterLevelGUI>();
+			MonsterLevelGUI ml = (MonsterLevelGUI) GetComponent<MonsterLevelGUI>();
+			ml = mlg;
+			//transform.GetComponent<MonsterLevelGUI>().enabled = true;
 		}else{
 			transform.GetComponentInChildren<Camera>().enabled = false;
-			transform.GetComponent<AudioListener>().enabled = false;
+//			Destroy(gameObject.GetComponent<HumanLevelGUI>());
+//			transform.GetComponent<AudioListener>().enabled = false;
 		}
 	}
 	// Use this for initialization

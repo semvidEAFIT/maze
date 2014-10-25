@@ -25,6 +25,7 @@ public class Human : MonoBehaviour {
 	/// </summary>
 	public float delayMonsterNear = 0.5f;
 
+	//public HumanLevelGUI hlg;
 
 	private float timeToPlayNear;
 
@@ -57,8 +58,13 @@ public class Human : MonoBehaviour {
 		if(networkView.isMine){
 			transform.GetComponentInChildren<Camera>().enabled = true;
 			humanName = Networker.Instance.UserName;
+			gameObject.AddComponent<HumanLevelGUI>();
+			//HumanLevelGUI hl = (HumanLevelGUI) GetComponent<HumanLevelGUI>();
+			//hl = hlg;
+			//transform.GetComponent<HumanLevelGUI>().enabled = true;
 		}else{
 			transform.GetComponentInChildren<Camera>().enabled = false;
+//			Destroy(gameObject.GetComponent<MonsterLevelGUI>());
 //			transform.GetComponent<AudioListener>().enabled = false;
 		}
 	}
